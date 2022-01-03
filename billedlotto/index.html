@@ -1,0 +1,639 @@
+<!doctype html>
+<html lang="en-us">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <link rel="shortcut icon" type="image/png" href="../icon256.png">
+  <title>Billedlotto</title>
+  <style>
+    * {
+      margin: 0px;
+      padding: 0px;
+      outline: none;
+      user-select: none;
+      -webkit-touch-callout: none;
+      -webkit-user-select: none;
+      -khtml-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      cursor: default;
+    }
+
+    body {
+      font-family: arial;
+      margin: 0px;
+      padding: 0px;
+      display: block;
+      overflow-x: hidden;
+    }
+
+    .emscripten {
+      padding-right: 0;
+      margin-left: auto;
+      margin-right: auto;
+      display: block;
+    }
+
+    div.emscripten {
+      text-align: center;
+    }
+
+    /* the canvas *must not* have any border or padding, or mouse coords will be wrong */
+    canvas.emscripten {
+      border: 0px none;
+    }
+
+    .spinner {
+      height: 30px;
+      width: 30px;
+      margin: 0;
+      margin-top: 20px;
+      margin-left: 20px;
+      display: inline-block;
+      vertical-align: top;
+
+      -webkit-animation: rotation .8s linear infinite;
+      -moz-animation: rotation .8s linear infinite;
+      -o-animation: rotation .8s linear infinite;
+      animation: rotation 0.8s linear infinite;
+
+      border-left: 5px solid rgb(235, 235, 235);
+      border-right: 5px solid rgb(235, 235, 235);
+      border-bottom: 5px solid rgb(235, 235, 235);
+      border-top: 5px solid rgb(120, 120, 120);
+
+      border-radius: 100%;
+      background-color: #0089ff;
+    }
+
+    @-webkit-keyframes rotation {
+      from {
+        -webkit-transform: rotate(0deg);
+      }
+
+      to {
+        -webkit-transform: rotate(360deg);
+      }
+    }
+
+    @-moz-keyframes rotation {
+      from {
+        -moz-transform: rotate(0deg);
+      }
+
+      to {
+        -moz-transform: rotate(360deg);
+      }
+    }
+
+    @-o-keyframes rotation {
+      from {
+        -o-transform: rotate(0deg);
+      }
+
+      to {
+        -o-transform: rotate(360deg);
+      }
+    }
+
+    @keyframes rotation {
+      from {
+        transform: rotate(0deg);
+      }
+
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    #status {
+      display: inline-block;
+      vertical-align: top;
+      margin-top: 30px;
+      margin-left: 20px;
+      font-weight: bold;
+      color: rgb(120, 120, 120);
+    }
+
+    #progress {
+      height: 20px;
+      width: 30px;
+    }
+
+    #controls {
+      display: inline-block;
+      float: right;
+      vertical-align: top;
+      margin-top: 30px;
+      margin-right: 20px;
+    }
+
+    #output {
+      width: 100%;
+      height: 200px;
+      margin: 0 auto;
+      margin-top: 10px;
+      display: block;
+      background-color: black;
+      color: rgb(0, 255, 0);
+      font-family: 'Lucida Console', Monaco, monospace;
+      outline: none;
+      display: none;
+      overflow-x: hidden;
+    }
+
+    svg {
+      transform: scale(0);
+    }
+
+    #homepage {
+      border: 1px solid #0089ff;
+      border-radius: 15px;
+      transition: 0.5s all;
+    }
+
+    #homepage:hover {
+      background-color: #0089ff;
+    }
+
+    #gofull {
+      border: 1px solid #0089ff;
+      border-radius: 15px;
+      transition: 0.5s all;
+      height: 40px;
+      width: 100px;
+    }
+
+    #gofull:hover {
+      background-color: #0089ff;
+    }
+  </style>
+  <link rel="shortcut icon" type="image/ico" href="/playdos/favicon.ico">
+</head>
+
+<body>
+  <img id="homepage" src="../homepage.png">
+
+  <div class="spinner" id='spinner'></div>
+  <div class="emscripten" id="status">Downloading...</div>
+
+  <span id='controls'>
+    <span><label><input type="checkbox" id="showLogs">Show Logs</label></span>
+    <span><label><input type="checkbox" id="resize">Don't resize canvas</label></span>
+    <span><label><input type="checkbox" id="pointerLock" checked>Lock/hide mouse pointer &nbsp;&nbsp;&nbsp;</label></span>
+    <span><input type="button" id="gofull" value="Fullscreen" onclick="Module.requestFullScreen(document.getElementById('pointerLock').checked,
+                                                                            document.getElementById('resize').checked)">
+    </span>
+  </span>
+
+  <div class="emscripten">
+    <progress value="0" max="100" id="progress" hidden=1></progress>
+  </div>
+
+
+  <div class="emscripten_border">
+    <canvas class="emscripten" id="canvas" oncontextmenu="event.preventDefault()"></canvas>
+  </div>
+  <textarea id="output" rows="8"></textarea>
+
+  <script type='text/javascript'>
+  </script>
+
+  <script type='text/javascript'>
+    document.addEventListener('contextmenu', function(e) {
+      e.preventDefault();
+    });
+    document.addEventListener('dragstart', function(e) {
+      e.preventDefault();
+    });
+    var statusElement = document.getElementById('status');
+    var progressElement = document.getElementById('progress');
+    var spinnerElement = document.getElementById('spinner');
+
+    var Module = {
+      preRun: [],
+      postRun: [],
+      print: (function() {
+        var element = document.getElementById('output');
+        if (element) element.value = ''; // clear browser cache
+        return function(text) {
+          if (arguments.length > 1) text = Array.prototype.slice.call(arguments).join(' ');
+          // These replacements are necessary if you render to raw HTML
+          //text = text.replace(/&/g, "&amp;");
+          //text = text.replace(/</g, "&lt;");
+          //text = text.replace(/>/g, "&gt;");
+          //text = text.replace('\n', '<br>', 'g');
+          //console.log(text);
+          if (text == 'Emulation aborted because stuck emulation timeout.') {
+            stuck_func();
+          } else if (element) {
+            element.value += text + "\n";
+            element.scrollTop = element.scrollHeight; // focus on bottom
+          }
+        };
+      })(),
+      printErr: function(text) {
+        if (arguments.length > 1) text = Array.prototype.slice.call(arguments).join(' ');
+        if (0) { // XXX disabled for safety typeof dump == 'function') {
+          dump(text + '\n'); // fast, straight to the real console
+        } else {
+          console.error(text);
+        }
+      },
+      canvas: (function() {
+        var canvas = document.getElementById('canvas');
+
+        // As a default initial behavior, pop up an alert when webgl context is lost. To make your
+        // application robust, you may want to override this behavior before shipping!
+        // See http://www.khronos.org/registry/webgl/specs/latest/1.0/#5.15.2
+        canvas.addEventListener("webglcontextlost", function(e) {
+          alert('WebGL context lost. You will need to reload the page.');
+          e.preventDefault();
+        }, false);
+
+        return canvas;
+      })(),
+      setStatus: function(text) {
+        if (!Module.setStatus.last) Module.setStatus.last = {
+          time: Date.now(),
+          text: ''
+        };
+        if (text === Module.setStatus.text) return;
+        var m = text.match(/([^(]+)\((\d+(\.\d+)?)\/(\d+)\)/);
+        var now = Date.now();
+        if (m && now - Date.now() < 30) return; // if this is a progress update, skip it if too soon
+        if (m) {
+          text = m[1];
+          progressElement.value = parseInt(m[2]) * 100;
+          progressElement.max = parseInt(m[4]) * 100;
+          progressElement.hidden = false;
+          spinnerElement.hidden = false;
+        } else {
+          progressElement.value = null;
+          progressElement.max = null;
+          progressElement.hidden = true;
+          if (!text) spinnerElement.style.display = 'none';
+        }
+        statusElement.innerHTML = text;
+      },
+      totalDependencies: 0,
+      monitorRunDependencies: function(left) {
+        this.totalDependencies = Math.max(this.totalDependencies, left);
+        Module.setStatus(left ? 'Preparing... (' + (this.totalDependencies - left) + '/' + this.totalDependencies + ')' : 'All downloads complete.');
+      }
+    };
+    Module.setStatus('Downloading...');
+    window.onerror = function(event) {
+      // TODO: do not warn on ok events like simulating an infinite loop or exitStatus
+      Module.setStatus('Exception thrown, see JavaScript console');
+      spinnerElement.style.display = 'none';
+      Module.setStatus = function(text) {
+        if (text) Module.printErr('[post-exception status] ' + text);
+      };
+    };
+  </script>
+  <script type="text/javascript">
+    var Module;
+    if (typeof Module === 'undefined') Module = eval('(function() { try { return Module || {} } catch(e) { return {} } })()');
+    if (!Module.expectedDataFileDownloads) {
+      Module.expectedDataFileDownloads = 0;
+      Module.finishedDataFileDownloads = 0;
+    }
+    Module.expectedDataFileDownloads++;
+    (function() {
+
+      var PACKAGE_PATH;
+      if (typeof window === 'object') {
+        PACKAGE_PATH = window['encodeURIComponent'](window.location.pathname.toString().substring(0, window.location.pathname.toString().lastIndexOf('/')) + '/');
+      } else if (typeof location !== 'undefined') {
+        // worker
+        PACKAGE_PATH = encodeURIComponent(location.pathname.toString().substring(0, location.pathname.toString().lastIndexOf('/')) + '/');
+      } else {
+        throw 'using preloaded data can only be done on a web page or in a web worker';
+      }
+      var PACKAGE_NAME = '/Users/ajf/Projects/2015/win95.ajf.me/em-dosbox/src/image.data';
+      var REMOTE_PACKAGE_BASE = 'billedlotto.data';
+      var USE_SPLITTER = !REMOTE_PACKAGE_BASE.toLowerCase().trim().endsWith('.data');
+      var CHUNK_SIZE = 1024 * 1024;
+      var CHUNKS_COUNT = 11;
+      if (typeof Module['locateFilePackage'] === 'function' && !Module['locateFile']) {
+        Module['locateFile'] = Module['locateFilePackage'];
+        Module.printErr('warning: you defined Module.locateFilePackage, that has been renamed to Module.locateFile (using your locateFilePackage for now)');
+      }
+      var REMOTE_PACKAGE_NAME = typeof Module['locateFile'] === 'function' ?
+        Module['locateFile'](REMOTE_PACKAGE_BASE) :
+        ((Module['filePackagePrefixURL'] || '') + REMOTE_PACKAGE_BASE);
+      var REMOTE_PACKAGE_SIZE = 407128;
+      var PACKAGE_UUID = 'a57dbcd5-b296-4352-a8ea-167654cb497d';
+
+      function fetchRemotePackage_default(packageName, packageSize, callback, errback) {
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', packageName, true);
+        xhr.responseType = 'arraybuffer';
+        xhr.onload = function(event) {
+          var packageData = xhr.response;
+          callback(packageData);
+        };
+        xhr.send(null);
+        if (Module['setStatus']) Module['setStatus']('Downloading data...');
+      };
+
+      function fetchRemotePackage(packageName, packageSize, callback, errback) {
+        if (!USE_SPLITTER)
+          return fetchRemotePackage_default(packageName, packageSize, callback, errback);
+        if (Module['setStatus']) Module['setStatus']('Downloading data...');
+        var finished_ = 0;
+        var buf = new Uint8Array(packageSize);
+        for (var i = 0; i < CHUNKS_COUNT; i++) {
+          const i_ = i;
+          const xhr = new XMLHttpRequest();
+          xhr.open('GET', packageName + '/' + packageName + '-' + (i_ * CHUNK_SIZE) + '.data', true);
+          xhr.responseType = 'arraybuffer';
+          xhr.onload = function(event) {
+            finished_ += 1;
+            buf.set(new Uint8Array(xhr.response), i_ * CHUNK_SIZE);
+            if (finished_ >= CHUNKS_COUNT) {
+              callback(buf);
+            }
+          };
+          xhr.send(null);
+        }
+      };
+
+      function handleError(error) {
+        console.error('package error:', error);
+      };
+
+      var fetched = null,
+        fetchedCallback = null;
+      fetchRemotePackage(REMOTE_PACKAGE_NAME, REMOTE_PACKAGE_SIZE, function(data) {
+        if (fetchedCallback) {
+          fetchedCallback(data);
+          fetchedCallback = null;
+        } else {
+          fetched = data;
+        }
+      }, handleError);
+
+      function runWithFS() {
+
+        function assert(check, msg) {
+          if (!check) throw msg + new Error().stack;
+        }
+
+        function DataRequest(start, end, crunched, audio) {
+          this.start = start;
+          this.end = end;
+          this.crunched = crunched;
+          this.audio = audio;
+        }
+        DataRequest.prototype = {
+          requests: {},
+          open: function(mode, name) {
+            this.name = name;
+            this.requests[name] = this;
+            Module['addRunDependency']('fp ' + this.name);
+          },
+          send: function() {},
+          onload: function() {
+            var byteArray = this.byteArray.subarray(this.start, this.end);
+
+            this.finish(byteArray);
+
+          },
+          finish: function(byteArray) {
+            var that = this;
+            Module['FS_createPreloadedFile'](this.name, null, byteArray, true, true, function() {
+              Module['removeRunDependency']('fp ' + that.name);
+            }, function() {
+              if (that.audio) {
+                Module['removeRunDependency']('fp ' + that.name); // workaround for chromium bug 124926 (still no audio with this, but at least we don't hang)
+              } else {
+                Module.printErr('Preloading file ' + that.name + ' failed');
+              }
+            }, false, true); // canOwn this data in the filesystem, it is a slide into the heap that will never change
+            this.requests[this.name] = null;
+          },
+        };
+        new DataRequest(0, 23, 0, 0).open('GET', '/autoexec.bat');
+        new DataRequest(23, 4063, 0, 0).open('GET', '/B.PCX');
+        new DataRequest(4063, 5686, 0, 0).open('GET', '/BADEBAL2.PCX');
+        new DataRequest(5686, 7674, 0, 0).open('GET', '/BADEBALL.PCX');
+        new DataRequest(7674, 13913, 0, 0).open('GET', '/BAL.PCX');
+        new DataRequest(13913, 16634, 0, 0).open('GET', '/BALLONG.PCX');
+        new DataRequest(16634, 23314, 0, 0).open('GET', '/BANG.PCX');
+        new DataRequest(23314, 24975, 0, 0).open('GET', '/BJELLE.PCX');
+        new DataRequest(24975, 25703, 0, 0).open('GET', '/BLANK.PCX');
+        new DataRequest(25703, 27314, 0, 0).open('GET', '/BLYANT.PCX');
+        new DataRequest(27314, 28627, 0, 0).open('GET', '/BOMBE.PCX');
+        new DataRequest(28627, 31297, 0, 0).open('GET', '/BRUM.PCX');
+        new DataRequest(31297, 31675, 0, 0).open('GET', '/C.PCX');
+        new DataRequest(31675, 34675, 0, 0).open('GET', '/D.PCX');
+        new DataRequest(34675, 35974, 0, 0).open('GET', '/DATAMASK.PCX');
+        new DataRequest(35974, 47588, 0, 0).open('GET', '/dosbox.conf');
+        new DataRequest(47588, 51357, 0, 0).open('GET', '/D_FLAGG.PCX');
+        new DataRequest(51357, 55165, 0, 0).open('GET', '/D_HAND.PCX');
+        new DataRequest(55165, 58409, 0, 0).open('GET', '/D_IS.PCX');
+        new DataRequest(58409, 62415, 0, 0).open('GET', '/D_MUS.PCX');
+        new DataRequest(62415, 64303, 0, 0).open('GET', '/D_SAKS.PCX');
+        new DataRequest(64303, 68115, 0, 0).open('GET', '/D_SE.PCX');
+        new DataRequest(68115, 71394, 0, 0).open('GET', '/D_SOL.PCX');
+        new DataRequest(71394, 75022, 0, 0).open('GET', '/D_TIME.PCX');
+        new DataRequest(75022, 78469, 0, 0).open('GET', '/E.PCX');
+        new DataRequest(78469, 83996, 0, 0).open('GET', '/EGAVGA.BGI');
+        new DataRequest(83996, 85626, 0, 0).open('GET', '/EGG.PCX');
+        new DataRequest(85626, 87009, 0, 0).open('GET', '/FARLIG.PCX');
+        new DataRequest(87009, 88892, 0, 0).open('GET', '/FIRKL.PCX');
+        new DataRequest(88892, 90313, 0, 0).open('GET', '/FMANN.PCX');
+        new DataRequest(90313, 91730, 0, 0).open('GET', '/FMANN2.PCX');
+        new DataRequest(91730, 104910, 0, 0).open('GET', '/GAME.PCX');
+        new DataRequest(104910, 109076, 0, 0).open('GET', '/GARDIST.PCX');
+        new DataRequest(109076, 174340, 0, 0).open('GET', '/GX_TP.TPU');
+        new DataRequest(174340, 176598, 0, 0).open('GET', '/HAND.PCX');
+        new DataRequest(176598, 178679, 0, 0).open('GET', '/HUND.PCX');
+        new DataRequest(178679, 181535, 0, 0).open('GET', '/I.PCX');
+        new DataRequest(181535, 183477, 0, 0).open('GET', '/KANIN.PCX');
+        new DataRequest(183477, 205230, 0, 0).open('GET', '/KARIUS.PCX');
+        new DataRequest(205230, 207664, 0, 0).open('GET', '/KATT.PCX');
+        new DataRequest(207664, 210104, 0, 0).open('GET', '/KIRKE.PCX');
+        new DataRequest(210104, 211823, 0, 0).open('GET', '/KIRS.PCX');
+        new DataRequest(211823, 213194, 0, 0).open('GET', '/KIRS2.PCX');
+        new DataRequest(213194, 215327, 0, 0).open('GET', '/KLOSS.PCX');
+        new DataRequest(215327, 216792, 0, 0).open('GET', '/KLOSS2.PCX');
+        new DataRequest(216792, 219369, 0, 0).open('GET', '/KORS.PCX');
+        new DataRequest(219369, 221937, 0, 0).open('GET', '/L.PCX');
+        new DataRequest(221937, 224029, 0, 0).open('GET', '/LYS.PCX');
+        new DataRequest(224029, 227649, 0, 0).open('GET', '/M.PCX');
+        new DataRequest(227649, 310081, 0, 0).open('GET', '/MEMORY.EXE');
+        new DataRequest(310081, 314549, 0, 0).open('GET', '/MEMORY.PCX');
+        new DataRequest(314549, 316446, 0, 0).open('GET', '/MUS1.PCX');
+        new DataRequest(316446, 318327, 0, 0).open('GET', '/MUS2.PCX');
+        new DataRequest(318327, 319727, 0, 0).open('GET', '/NESTE.PCX');
+        new DataRequest(319727, 322760, 0, 0).open('GET', '/O.PCX');
+        new DataRequest(322760, 324003, 0, 0).open('GET', '/OPP.PCX');
+        new DataRequest(324003, 326082, 0, 0).open('GET', '/PAT.PCX');
+        new DataRequest(326082, 328278, 0, 0).open('GET', '/PAT2.PCX');
+        new DataRequest(328278, 355414, 0, 0).open('GET', '/PCX_TP.TPU');
+        new DataRequest(355414, 356573, 0, 0).open('GET', '/PEKE.PCX');
+        new DataRequest(356573, 357374, 0, 0).open('GET', '/RANK.PAS');
+        new DataRequest(357374, 357524, 0, 0).open('GET', '/RANKING1');
+        new DataRequest(357524, 357674, 0, 0).open('GET', '/RANKING2');
+        new DataRequest(357674, 357824, 0, 0).open('GET', '/RANKING3');
+        new DataRequest(357824, 360951, 0, 0).open('GET', '/RAR.PCX');
+        new DataRequest(360951, 362980, 0, 0).open('GET', '/SMIL.PCX');
+        new DataRequest(362980, 364706, 0, 0).open('GET', '/SOL.PCX');
+        new DataRequest(364706, 366910, 0, 0).open('GET', '/SOL2.PCX');
+        new DataRequest(366910, 368724, 0, 0).open('GET', '/SUR.PCX');
+        new DataRequest(368724, 370172, 0, 0).open('GET', '/SVART.PCX');
+        new DataRequest(370172, 371966, 0, 0).open('GET', '/TEKST.PAS');
+        new DataRequest(371966, 374661, 0, 0).open('GET', '/TERNING.PCX');
+        new DataRequest(374661, 375989, 0, 0).open('GET', '/TRA.PCX');
+        new DataRequest(375989, 379109, 0, 0).open('GET', '/TRAD.PCX');
+        new DataRequest(379109, 380711, 0, 0).open('GET', '/TULL.PCX');
+        new DataRequest(380711, 383315, 0, 0).open('GET', '/TULL2.PCX');
+        new DataRequest(383315, 385268, 0, 0).open('GET', '/VEI.PCX');
+        new DataRequest(385268, 387264, 0, 0).open('GET', '/VIMPEL.PCX');
+        new DataRequest(387264, 389700, 0, 0).open('GET', '/VINNER.PCX');
+        new DataRequest(389700, 394157, 0, 0).open('GET', '/VINNER1.PCX');
+        new DataRequest(394157, 397089, 0, 0).open('GET', '/VINNER2.PCX');
+        new DataRequest(397089, 404599, 0, 0).open('GET', '/VIN_IS.PCX');
+        new DataRequest(404599, 407128, 0, 0).open('GET', '/VIRVAR.PCX');
+
+        function processPackageData(arrayBuffer) {
+          Module.finishedDataFileDownloads++;
+          assert(arrayBuffer, 'Loading data file failed.');
+          var byteArray = new Uint8Array(arrayBuffer);
+          var curr;
+
+          // Reuse the bytearray from the XHR as the source for file reads.
+          DataRequest.prototype.byteArray = byteArray;
+          DataRequest.prototype.requests['/autoexec.bat'].onload();
+          DataRequest.prototype.requests['/B.PCX'].onload();
+          DataRequest.prototype.requests['/BADEBAL2.PCX'].onload();
+          DataRequest.prototype.requests['/BADEBALL.PCX'].onload();
+          DataRequest.prototype.requests['/BAL.PCX'].onload();
+          DataRequest.prototype.requests['/BALLONG.PCX'].onload();
+          DataRequest.prototype.requests['/BANG.PCX'].onload();
+          DataRequest.prototype.requests['/BJELLE.PCX'].onload();
+          DataRequest.prototype.requests['/BLANK.PCX'].onload();
+          DataRequest.prototype.requests['/BLYANT.PCX'].onload();
+          DataRequest.prototype.requests['/BOMBE.PCX'].onload();
+          DataRequest.prototype.requests['/BRUM.PCX'].onload();
+          DataRequest.prototype.requests['/C.PCX'].onload();
+          DataRequest.prototype.requests['/D.PCX'].onload();
+          DataRequest.prototype.requests['/DATAMASK.PCX'].onload();
+          DataRequest.prototype.requests['/dosbox.conf'].onload();
+          DataRequest.prototype.requests['/D_FLAGG.PCX'].onload();
+          DataRequest.prototype.requests['/D_HAND.PCX'].onload();
+          DataRequest.prototype.requests['/D_IS.PCX'].onload();
+          DataRequest.prototype.requests['/D_MUS.PCX'].onload();
+          DataRequest.prototype.requests['/D_SAKS.PCX'].onload();
+          DataRequest.prototype.requests['/D_SE.PCX'].onload();
+          DataRequest.prototype.requests['/D_SOL.PCX'].onload();
+          DataRequest.prototype.requests['/D_TIME.PCX'].onload();
+          DataRequest.prototype.requests['/E.PCX'].onload();
+          DataRequest.prototype.requests['/EGAVGA.BGI'].onload();
+          DataRequest.prototype.requests['/EGG.PCX'].onload();
+          DataRequest.prototype.requests['/FARLIG.PCX'].onload();
+          DataRequest.prototype.requests['/FIRKL.PCX'].onload();
+          DataRequest.prototype.requests['/FMANN.PCX'].onload();
+          DataRequest.prototype.requests['/FMANN2.PCX'].onload();
+          DataRequest.prototype.requests['/GAME.PCX'].onload();
+          DataRequest.prototype.requests['/GARDIST.PCX'].onload();
+          DataRequest.prototype.requests['/GX_TP.TPU'].onload();
+          DataRequest.prototype.requests['/HAND.PCX'].onload();
+          DataRequest.prototype.requests['/HUND.PCX'].onload();
+          DataRequest.prototype.requests['/I.PCX'].onload();
+          DataRequest.prototype.requests['/KANIN.PCX'].onload();
+          DataRequest.prototype.requests['/KARIUS.PCX'].onload();
+          DataRequest.prototype.requests['/KATT.PCX'].onload();
+          DataRequest.prototype.requests['/KIRKE.PCX'].onload();
+          DataRequest.prototype.requests['/KIRS.PCX'].onload();
+          DataRequest.prototype.requests['/KIRS2.PCX'].onload();
+          DataRequest.prototype.requests['/KLOSS.PCX'].onload();
+          DataRequest.prototype.requests['/KLOSS2.PCX'].onload();
+          DataRequest.prototype.requests['/KORS.PCX'].onload();
+          DataRequest.prototype.requests['/L.PCX'].onload();
+          DataRequest.prototype.requests['/LYS.PCX'].onload();
+          DataRequest.prototype.requests['/M.PCX'].onload();
+          DataRequest.prototype.requests['/MEMORY.EXE'].onload();
+          DataRequest.prototype.requests['/MEMORY.PCX'].onload();
+          DataRequest.prototype.requests['/MUS1.PCX'].onload();
+          DataRequest.prototype.requests['/MUS2.PCX'].onload();
+          DataRequest.prototype.requests['/NESTE.PCX'].onload();
+          DataRequest.prototype.requests['/O.PCX'].onload();
+          DataRequest.prototype.requests['/OPP.PCX'].onload();
+          DataRequest.prototype.requests['/PAT.PCX'].onload();
+          DataRequest.prototype.requests['/PAT2.PCX'].onload();
+          DataRequest.prototype.requests['/PCX_TP.TPU'].onload();
+          DataRequest.prototype.requests['/PEKE.PCX'].onload();
+          DataRequest.prototype.requests['/RANK.PAS'].onload();
+          DataRequest.prototype.requests['/RANKING1'].onload();
+          DataRequest.prototype.requests['/RANKING2'].onload();
+          DataRequest.prototype.requests['/RANKING3'].onload();
+          DataRequest.prototype.requests['/RAR.PCX'].onload();
+          DataRequest.prototype.requests['/SMIL.PCX'].onload();
+          DataRequest.prototype.requests['/SOL.PCX'].onload();
+          DataRequest.prototype.requests['/SOL2.PCX'].onload();
+          DataRequest.prototype.requests['/SUR.PCX'].onload();
+          DataRequest.prototype.requests['/SVART.PCX'].onload();
+          DataRequest.prototype.requests['/TEKST.PAS'].onload();
+          DataRequest.prototype.requests['/TERNING.PCX'].onload();
+          DataRequest.prototype.requests['/TRA.PCX'].onload();
+          DataRequest.prototype.requests['/TRAD.PCX'].onload();
+          DataRequest.prototype.requests['/TULL.PCX'].onload();
+          DataRequest.prototype.requests['/TULL2.PCX'].onload();
+          DataRequest.prototype.requests['/VEI.PCX'].onload();
+          DataRequest.prototype.requests['/VIMPEL.PCX'].onload();
+          DataRequest.prototype.requests['/VINNER.PCX'].onload();
+          DataRequest.prototype.requests['/VINNER1.PCX'].onload();
+          DataRequest.prototype.requests['/VINNER2.PCX'].onload();
+          DataRequest.prototype.requests['/VIN_IS.PCX'].onload();
+          DataRequest.prototype.requests['/VIRVAR.PCX'].onload();
+          Module['removeRunDependency']('datafile_/Users/ajf/Projects/2015/win95.ajf.me/em-dosbox/src/image.data');
+
+        };
+        Module['addRunDependency']('datafile_/Users/ajf/Projects/2015/win95.ajf.me/em-dosbox/src/image.data');
+
+        if (!Module.preloadResults) Module.preloadResults = {};
+
+        Module.preloadResults[PACKAGE_NAME] = {
+          fromCache: false
+        };
+        if (fetched) {
+          processPackageData(fetched);
+          fetched = null;
+        } else {
+          fetchedCallback = processPackageData;
+        }
+
+      }
+      if (Module['calledRun']) {
+        runWithFS();
+      } else {
+        if (!Module['preRun']) Module['preRun'] = [];
+        Module["preRun"].push(runWithFS); // FS is not initialized yet, wait for it
+      }
+
+    })();
+
+    Module['arguments'] = [ './autoexec.bat' ];
+
+    function stuck_func() {}
+    document.getElementById('showLogs').addEventListener('change', function() {
+      if (document.getElementById('showLogs').checked) {
+        document.getElementById('output').style.display = "block";
+      } else {
+        document.getElementById('output').style.display = "none";
+      }
+    });
+
+    document.getElementById('homepage').addEventListener('click', function() {
+      location.href = '..';
+    });
+  </script>
+  <script async type="text/javascript" src="../dosbox/playdos.js"></script>
+</body>
+
+</html>

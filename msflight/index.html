@@ -1,0 +1,679 @@
+<!doctype html>
+<html lang="en-us">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <link rel="shortcut icon" type="image/png" href="../icon256.png">
+  <title>Microsoft Flight Simulator</title>
+  <style>
+    * {
+      margin: 0px;
+      padding: 0px;
+      outline: none;
+      user-select: none;
+      -webkit-touch-callout: none;
+      -webkit-user-select: none;
+      -khtml-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      cursor: default;
+    }
+
+    body {
+      font-family: arial;
+      margin: 0px;
+      padding: 0px;
+      display: block;
+      overflow-x: hidden;
+    }
+
+    .emscripten {
+      padding-right: 0;
+      margin-left: auto;
+      margin-right: auto;
+      display: block;
+    }
+
+    div.emscripten {
+      text-align: center;
+    }
+
+    /* the canvas *must not* have any border or padding, or mouse coords will be wrong */
+    canvas.emscripten {
+      border: 0px none;
+    }
+
+    .spinner {
+      height: 30px;
+      width: 30px;
+      margin: 0;
+      margin-top: 20px;
+      margin-left: 20px;
+      display: inline-block;
+      vertical-align: top;
+
+      -webkit-animation: rotation .8s linear infinite;
+      -moz-animation: rotation .8s linear infinite;
+      -o-animation: rotation .8s linear infinite;
+      animation: rotation 0.8s linear infinite;
+
+      border-left: 5px solid rgb(235, 235, 235);
+      border-right: 5px solid rgb(235, 235, 235);
+      border-bottom: 5px solid rgb(235, 235, 235);
+      border-top: 5px solid rgb(120, 120, 120);
+
+      border-radius: 100%;
+      background-color: #0089ff;
+    }
+
+    @-webkit-keyframes rotation {
+      from {
+        -webkit-transform: rotate(0deg);
+      }
+
+      to {
+        -webkit-transform: rotate(360deg);
+      }
+    }
+
+    @-moz-keyframes rotation {
+      from {
+        -moz-transform: rotate(0deg);
+      }
+
+      to {
+        -moz-transform: rotate(360deg);
+      }
+    }
+
+    @-o-keyframes rotation {
+      from {
+        -o-transform: rotate(0deg);
+      }
+
+      to {
+        -o-transform: rotate(360deg);
+      }
+    }
+
+    @keyframes rotation {
+      from {
+        transform: rotate(0deg);
+      }
+
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    #status {
+      display: inline-block;
+      vertical-align: top;
+      margin-top: 30px;
+      margin-left: 20px;
+      font-weight: bold;
+      color: rgb(120, 120, 120);
+    }
+
+    #progress {
+      height: 20px;
+      width: 30px;
+    }
+
+    #controls {
+      display: inline-block;
+      float: right;
+      vertical-align: top;
+      margin-top: 30px;
+      margin-right: 20px;
+    }
+
+    #output {
+      width: 100%;
+      height: 200px;
+      margin: 0 auto;
+      margin-top: 10px;
+      display: block;
+      background-color: black;
+      color: rgb(0, 255, 0);
+      font-family: 'Lucida Console', Monaco, monospace;
+      outline: none;
+      display: none;
+      overflow-x: hidden;
+    }
+
+    svg {
+      transform: scale(0);
+    }
+
+    #homepage {
+      border: 1px solid #0089ff;
+      border-radius: 15px;
+      transition: 0.5s all;
+    }
+
+    #homepage:hover {
+      background-color: #0089ff;
+    }
+
+    #gofull {
+      border: 1px solid #0089ff;
+      border-radius: 15px;
+      transition: 0.5s all;
+      height: 40px;
+      width: 100px;
+    }
+
+    #gofull:hover {
+      background-color: #0089ff;
+    }
+  </style>
+  <link rel="shortcut icon" type="image/ico" href="/playdos/favicon.ico">
+</head>
+
+<body>
+  <img id="homepage" src="../homepage.png">
+
+  <div class="spinner" id='spinner'></div>
+  <div class="emscripten" id="status">Downloading...</div>
+
+  <span id='controls'>
+    <span><label><input type="checkbox" id="showLogs">Show Logs</label></span>
+    <span><label><input type="checkbox" id="resize">Don't resize canvas</label></span>
+    <span><label><input type="checkbox" id="pointerLock" checked>Lock/hide mouse pointer &nbsp;&nbsp;&nbsp;</label></span>
+    <span><input type="button" id="gofull" value="Fullscreen" onclick="Module.requestFullScreen(document.getElementById('pointerLock').checked,
+                                                                            document.getElementById('resize').checked)">
+    </span>
+  </span>
+
+  <div class="emscripten">
+    <progress value="0" max="100" id="progress" hidden=1></progress>
+  </div>
+
+
+  <div class="emscripten_border">
+    <canvas class="emscripten" id="canvas" oncontextmenu="event.preventDefault()"></canvas>
+  </div>
+  <textarea id="output" rows="8"></textarea>
+
+  <script type='text/javascript'>
+  </script>
+
+  <script type='text/javascript'>
+    document.addEventListener('contextmenu', function(e) {
+      e.preventDefault();
+    });
+    document.addEventListener('dragstart', function(e) {
+      e.preventDefault();
+    });
+    var statusElement = document.getElementById('status');
+    var progressElement = document.getElementById('progress');
+    var spinnerElement = document.getElementById('spinner');
+
+    var Module = {
+      preRun: [],
+      postRun: [],
+      print: (function() {
+        var element = document.getElementById('output');
+        if (element) element.value = ''; // clear browser cache
+        return function(text) {
+          if (arguments.length > 1) text = Array.prototype.slice.call(arguments).join(' ');
+          // These replacements are necessary if you render to raw HTML
+          //text = text.replace(/&/g, "&amp;");
+          //text = text.replace(/</g, "&lt;");
+          //text = text.replace(/>/g, "&gt;");
+          //text = text.replace('\n', '<br>', 'g');
+          //console.log(text);
+          if (text == 'Emulation aborted because stuck emulation timeout.') {
+            stuck_func();
+          } else if (element) {
+            element.value += text + "\n";
+            element.scrollTop = element.scrollHeight; // focus on bottom
+          }
+        };
+      })(),
+      printErr: function(text) {
+        if (arguments.length > 1) text = Array.prototype.slice.call(arguments).join(' ');
+        if (0) { // XXX disabled for safety typeof dump == 'function') {
+          dump(text + '\n'); // fast, straight to the real console
+        } else {
+          console.error(text);
+        }
+      },
+      canvas: (function() {
+        var canvas = document.getElementById('canvas');
+
+        // As a default initial behavior, pop up an alert when webgl context is lost. To make your
+        // application robust, you may want to override this behavior before shipping!
+        // See http://www.khronos.org/registry/webgl/specs/latest/1.0/#5.15.2
+        canvas.addEventListener("webglcontextlost", function(e) {
+          alert('WebGL context lost. You will need to reload the page.');
+          e.preventDefault();
+        }, false);
+
+        return canvas;
+      })(),
+      setStatus: function(text) {
+        if (!Module.setStatus.last) Module.setStatus.last = {
+          time: Date.now(),
+          text: ''
+        };
+        if (text === Module.setStatus.text) return;
+        var m = text.match(/([^(]+)\((\d+(\.\d+)?)\/(\d+)\)/);
+        var now = Date.now();
+        if (m && now - Date.now() < 30) return; // if this is a progress update, skip it if too soon
+        if (m) {
+          text = m[1];
+          progressElement.value = parseInt(m[2]) * 100;
+          progressElement.max = parseInt(m[4]) * 100;
+          progressElement.hidden = false;
+          spinnerElement.hidden = false;
+        } else {
+          progressElement.value = null;
+          progressElement.max = null;
+          progressElement.hidden = true;
+          if (!text) spinnerElement.style.display = 'none';
+        }
+        statusElement.innerHTML = text;
+      },
+      totalDependencies: 0,
+      monitorRunDependencies: function(left) {
+        this.totalDependencies = Math.max(this.totalDependencies, left);
+        Module.setStatus(left ? 'Preparing... (' + (this.totalDependencies - left) + '/' + this.totalDependencies + ')' : 'All downloads complete.');
+      }
+    };
+    Module.setStatus('Downloading...');
+    window.onerror = function(event) {
+      // TODO: do not warn on ok events like simulating an infinite loop or exitStatus
+      Module.setStatus('Exception thrown, see JavaScript console');
+      spinnerElement.style.display = 'none';
+      Module.setStatus = function(text) {
+        if (text) Module.printErr('[post-exception status] ' + text);
+      };
+    };
+  </script>
+  <script type="text/javascript">
+    var Module;
+    if (typeof Module === 'undefined') Module = eval('(function() { try { return Module || {} } catch(e) { return {} } })()');
+    if (!Module.expectedDataFileDownloads) {
+      Module.expectedDataFileDownloads = 0;
+      Module.finishedDataFileDownloads = 0;
+    }
+    Module.expectedDataFileDownloads++;
+    (function() {
+
+      var PACKAGE_PATH;
+      if (typeof window === 'object') {
+        PACKAGE_PATH = window['encodeURIComponent'](window.location.pathname.toString().substring(0, window.location.pathname.toString().lastIndexOf('/')) + '/');
+      } else if (typeof location !== 'undefined') {
+        // worker
+        PACKAGE_PATH = encodeURIComponent(location.pathname.toString().substring(0, location.pathname.toString().lastIndexOf('/')) + '/');
+      } else {
+        throw 'using preloaded data can only be done on a web page or in a web worker';
+      }
+      var PACKAGE_NAME = '/Users/ajf/Projects/2015/win95.ajf.me/em-dosbox/src/image.data';
+      var REMOTE_PACKAGE_BASE = 'msflight.data';
+      var USE_SPLITTER = !REMOTE_PACKAGE_BASE.toLowerCase().trim().endsWith('.data');
+      var CHUNK_SIZE = 1024 * 1024;
+      var CHUNKS_COUNT = 11;
+      if (typeof Module['locateFilePackage'] === 'function' && !Module['locateFile']) {
+        Module['locateFile'] = Module['locateFilePackage'];
+        Module.printErr('warning: you defined Module.locateFilePackage, that has been renamed to Module.locateFile (using your locateFilePackage for now)');
+      }
+      var REMOTE_PACKAGE_NAME = typeof Module['locateFile'] === 'function' ?
+        Module['locateFile'](REMOTE_PACKAGE_BASE) :
+        ((Module['filePackagePrefixURL'] || '') + REMOTE_PACKAGE_BASE);
+      var REMOTE_PACKAGE_SIZE = 1090875;
+      var PACKAGE_UUID = 'a57dbcd5-b296-4352-a8ea-167654cb497d';
+
+      function fetchRemotePackage_default(packageName, packageSize, callback, errback) {
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', packageName, true);
+        xhr.responseType = 'arraybuffer';
+        xhr.onload = function(event) {
+          var packageData = xhr.response;
+          callback(packageData);
+        };
+        xhr.send(null);
+        if (Module['setStatus']) Module['setStatus']('Downloading data...');
+      };
+
+      function fetchRemotePackage(packageName, packageSize, callback, errback) {
+        if (!USE_SPLITTER)
+          return fetchRemotePackage_default(packageName, packageSize, callback, errback);
+        if (Module['setStatus']) Module['setStatus']('Downloading data...');
+        var finished_ = 0;
+        var buf = new Uint8Array(packageSize);
+        for (var i = 0; i < CHUNKS_COUNT; i++) {
+          const i_ = i;
+          const xhr = new XMLHttpRequest();
+          xhr.open('GET', packageName + '/' + packageName + '-' + (i_ * CHUNK_SIZE) + '.data', true);
+          xhr.responseType = 'arraybuffer';
+          xhr.onload = function(event) {
+            finished_ += 1;
+            buf.set(new Uint8Array(xhr.response), i_ * CHUNK_SIZE);
+            if (finished_ >= CHUNKS_COUNT) {
+              callback(buf);
+            }
+          };
+          xhr.send(null);
+        }
+      };
+
+      function handleError(error) {
+        console.error('package error:', error);
+      };
+
+      var fetched = null,
+        fetchedCallback = null;
+      fetchRemotePackage(REMOTE_PACKAGE_NAME, REMOTE_PACKAGE_SIZE, function(data) {
+        if (fetchedCallback) {
+          fetchedCallback(data);
+          fetchedCallback = null;
+        } else {
+          fetched = data;
+        }
+      }, handleError);
+
+      function runWithFS() {
+
+        function assert(check, msg) {
+          if (!check) throw msg + new Error().stack;
+        }
+
+        function DataRequest(start, end, crunched, audio) {
+          this.start = start;
+          this.end = end;
+          this.crunched = crunched;
+          this.audio = audio;
+        }
+        DataRequest.prototype = {
+          requests: {},
+          open: function(mode, name) {
+            this.name = name;
+            this.requests[name] = this;
+            Module['addRunDependency']('fp ' + this.name);
+          },
+          send: function() {},
+          onload: function() {
+            var byteArray = this.byteArray.subarray(this.start, this.end);
+
+            this.finish(byteArray);
+
+          },
+          finish: function(byteArray) {
+            var that = this;
+            Module['FS_createPreloadedFile'](this.name, null, byteArray, true, true, function() {
+              Module['removeRunDependency']('fp ' + that.name);
+            }, function() {
+              if (that.audio) {
+                Module['removeRunDependency']('fp ' + that.name); // workaround for chromium bug 124926 (still no audio with this, but at least we don't hang)
+              } else {
+                Module.printErr('Preloading file ' + that.name + ' failed');
+              }
+            }, false, true); // canOwn this data in the filesystem, it is a slide into the heap that will never change
+            this.requests[this.name] = null;
+          },
+        };
+        new DataRequest(0, 28570, 0, 0).open('GET', '/747.AD1');
+        new DataRequest(28570, 72273, 0, 0).open('GET', '/747.F6H');
+        new DataRequest(72273, 72775, 0, 0).open('GET', '/747SENSE');
+        new DataRequest(72775, 113189, 0, 0).open('GET', '/A.G3D');
+        new DataRequest(113189, 117725, 0, 0).open('GET', '/ANALYSIS.APL');
+        new DataRequest(117725, 120485, 0, 0).open('GET', '/ATC.FS4');
+        new DataRequest(120485, 120505, 0, 0).open('GET', '/autoexec.bat');
+        new DataRequest(120505, 120514, 0, 0).open('GET', '/AUTOEXEC.FS4');
+        new DataRequest(120514, 121040, 0, 0).open('GET', '/BOEING.MOD');
+        new DataRequest(121040, 121049, 0, 0).open('GET', '/CF.FS4');
+        new DataRequest(121049, 140841, 0, 0).open('GET', '/CGA1.GRA');
+        new DataRequest(140841, 160393, 0, 0).open('GET', '/CGA2.GRA');
+        new DataRequest(160393, 160407, 0, 0).open('GET', '/CONFIG.FS4');
+        new DataRequest(160407, 163262, 0, 0).open('GET', '/CONVERTS.EXE');
+        new DataRequest(163262, 168592, 0, 0).open('GET', '/CROP.APL');
+        new DataRequest(168592, 217418, 0, 0).open('GET', '/DESIGNER.AD1');
+        new DataRequest(217418, 229032, 0, 0).open('GET', '/dosbox.conf');
+        new DataRequest(229032, 231128, 0, 0).open('GET', '/DYNAMIC.FS4');
+        new DataRequest(231128, 239170, 0, 0).open('GET', '/DYNMODEL.AD1');
+        new DataRequest(239170, 259420, 0, 0).open('GET', '/EGA1.GRA');
+        new DataRequest(259420, 278860, 0, 0).open('GET', '/EGB1.GRA');
+        new DataRequest(278860, 418349, 0, 0).open('GET', '/F1');
+        new DataRequest(418349, 430413, 0, 0).open('GET', '/F1.DYN');
+        new DataRequest(430413, 436740, 0, 0).open('GET', '/F6');
+        new DataRequest(436740, 448651, 0, 0).open('GET', '/F6C');
+        new DataRequest(448651, 449323, 0, 0).open('GET', '/F6CSENS');
+        new DataRequest(449323, 467576, 0, 0).open('GET', '/F6H');
+        new DataRequest(467576, 468248, 0, 0).open('GET', '/F6HSENS');
+        new DataRequest(468248, 468920, 0, 0).open('GET', '/F6MSENS');
+        new DataRequest(468920, 469592, 0, 0).open('GET', '/F6SENS');
+        new DataRequest(469592, 469609, 0, 0).open('GET', '/file_id.diz');
+        new DataRequest(469609, 525915, 0, 0).open('GET', '/FOREIGN.FS4');
+        new DataRequest(525915, 527805, 0, 0).open('GET', '/FORM.APL');
+        new DataRequest(527805, 529139, 0, 0).open('GET', '/FORM1.DEM');
+        new DataRequest(529139, 530772, 0, 0).open('GET', '/FORM2.DEM');
+        new DataRequest(530772, 532808, 0, 0).open('GET', '/FORM3.DEM');
+        new DataRequest(532808, 533896, 0, 0).open('GET', '/FORM4.DEM');
+        new DataRequest(533896, 535506, 0, 0).open('GET', '/FORM5.DEM');
+        new DataRequest(535506, 536408, 0, 0).open('GET', '/FORM6.DEM');
+        new DataRequest(536408, 537636, 0, 0).open('GET', '/FORM7.DEM');
+        new DataRequest(537636, 537645, 0, 0).open('GET', '/FS.BAT');
+        new DataRequest(537645, 542596, 0, 0).open('GET', '/FS4.DEM');
+        new DataRequest(542596, 623975, 0, 0).open('GET', '/FS4.EXE');
+        new DataRequest(623975, 624942, 0, 0).open('GET', '/FS4.PIF');
+        new DataRequest(624942, 644414, 0, 0).open('GET', '/INCLR.GRA');
+        new DataRequest(644414, 644911, 0, 0).open('GET', '/KB1.KBD');
+        new DataRequest(644911, 645481, 0, 0).open('GET', '/KB2.KBD');
+        new DataRequest(645481, 646469, 0, 0).open('GET', '/KB3.KBD');
+        new DataRequest(646469, 664227, 0, 0).open('GET', '/LESLIB.FLB');
+        new DataRequest(664227, 668104, 0, 0).open('GET', '/LESSONS.APL');
+        new DataRequest(668104, 684931, 0, 0).open('GET', '/MODES.LBR');
+        new DataRequest(684931, 704803, 0, 0).open('GET', '/MONO.GRA');
+        new DataRequest(704803, 708936, 0, 0).open('GET', '/MULTI.APL');
+        new DataRequest(708936, 724010, 0, 0).open('GET', '/OBJECTS.AD1');
+        new DataRequest(724010, 747098, 0, 0).open('GET', '/PS21.GRA');
+        new DataRequest(747098, 747430, 0, 0).open('GET', '/Read-me.1st');
+        new DataRequest(747430, 756602, 0, 0).open('GET', '/README.AD1');
+        new DataRequest(756602, 760624, 0, 0).open('GET', '/README.DOC');
+        new DataRequest(760624, 942896, 0, 0).open('GET', '/Sd-eur.scn');
+        new DataRequest(942896, 946984, 0, 0).open('GET', '/SEATTLE.DY1');
+        new DataRequest(946984, 954135, 0, 0).open('GET', '/SEATTLE.SC1');
+        new DataRequest(954135, 954498, 0, 0).open('GET', '/SIM1.SIM');
+        new DataRequest(954498, 954861, 0, 0).open('GET', '/SIM2.SIM');
+        new DataRequest(954861, 955224, 0, 0).open('GET', '/SIM3.SIM');
+        new DataRequest(955224, 955587, 0, 0).open('GET', '/SIM4.SIM');
+        new DataRequest(955587, 955950, 0, 0).open('GET', '/SIM5.SIM');
+        new DataRequest(955950, 1010991, 0, 0).open('GET', '/SIM6.DRV');
+        new DataRequest(1010991, 1011354, 0, 0).open('GET', '/SIM7.SIM');
+        new DataRequest(1011354, 1011717, 0, 0).open('GET', '/SIM8.SIM');
+        new DataRequest(1011717, 1012080, 0, 0).open('GET', '/SIM9.SIM');
+        new DataRequest(1012080, 1012443, 0, 0).open('GET', '/SIMA.SIM');
+        new DataRequest(1012443, 1012806, 0, 0).open('GET', '/SIMB.SIM');
+        new DataRequest(1012806, 1013169, 0, 0).open('GET', '/SIMC.SIM');
+        new DataRequest(1013169, 1017690, 0, 0).open('GET', '/SOARING.DEM');
+        new DataRequest(1017690, 1018216, 0, 0).open('GET', '/STARTUP.MOD');
+        new DataRequest(1018216, 1019788, 0, 0).open('GET', '/STR.FS4');
+        new DataRequest(1019788, 1041036, 0, 0).open('GET', '/TGA1.GRA');
+        new DataRequest(1041036, 1044555, 0, 0).open('GET', '/WW1.APL');
+        new DataRequest(1044555, 1045270, 0, 0).open('GET', '/_LA1.DEM');
+        new DataRequest(1045270, 1045880, 0, 0).open('GET', '/_LA2.DEM');
+        new DataRequest(1045880, 1046991, 0, 0).open('GET', '/_LA3.DEM');
+        new DataRequest(1046991, 1048618, 0, 0).open('GET', '/_LA4.DEM');
+        new DataRequest(1048618, 1051623, 0, 0).open('GET', '/_LA5.DEM');
+        new DataRequest(1051623, 1053144, 0, 0).open('GET', '/_LA6.DEM');
+        new DataRequest(1053144, 1059648, 0, 0).open('GET', '/_LA7.DEM');
+        new DataRequest(1059648, 1062950, 0, 0).open('GET', '/_LA8.DEM');
+        new DataRequest(1062950, 1063977, 0, 0).open('GET', '/_LB1.DEM');
+        new DataRequest(1063977, 1072174, 0, 0).open('GET', '/_LB2.DEM');
+        new DataRequest(1072174, 1072938, 0, 0).open('GET', '/_LB3.DEM');
+        new DataRequest(1072938, 1075199, 0, 0).open('GET', '/_LB4.DEM');
+        new DataRequest(1075199, 1075883, 0, 0).open('GET', '/_LB5.DEM');
+        new DataRequest(1075883, 1077024, 0, 0).open('GET', '/_LB6.DEM');
+        new DataRequest(1077024, 1080189, 0, 0).open('GET', '/_LB7.DEM');
+        new DataRequest(1080189, 1081320, 0, 0).open('GET', '/_LB8.DEM');
+        new DataRequest(1081320, 1082584, 0, 0).open('GET', '/_LB9.DEM');
+        new DataRequest(1082584, 1084909, 0, 0).open('GET', '/_LBA.DEM');
+        new DataRequest(1084909, 1085962, 0, 0).open('GET', '/_LE1.DEM');
+        new DataRequest(1085962, 1086842, 0, 0).open('GET', '/_LE2.DEM');
+        new DataRequest(1086842, 1087364, 0, 0).open('GET', '/_LE3.DEM');
+        new DataRequest(1087364, 1087990, 0, 0).open('GET', '/_LE4.DEM');
+        new DataRequest(1087990, 1088770, 0, 0).open('GET', '/_LE5.DEM');
+        new DataRequest(1088770, 1089710, 0, 0).open('GET', '/_LE6.DEM');
+        new DataRequest(1089710, 1090875, 0, 0).open('GET', '/_LE7.DEM');
+
+        function processPackageData(arrayBuffer) {
+          Module.finishedDataFileDownloads++;
+          assert(arrayBuffer, 'Loading data file failed.');
+          var byteArray = new Uint8Array(arrayBuffer);
+          var curr;
+
+          // Reuse the bytearray from the XHR as the source for file reads.
+          DataRequest.prototype.byteArray = byteArray;
+          DataRequest.prototype.requests['/747.AD1'].onload();
+          DataRequest.prototype.requests['/747.F6H'].onload();
+          DataRequest.prototype.requests['/747SENSE'].onload();
+          DataRequest.prototype.requests['/A.G3D'].onload();
+          DataRequest.prototype.requests['/ANALYSIS.APL'].onload();
+          DataRequest.prototype.requests['/ATC.FS4'].onload();
+          DataRequest.prototype.requests['/autoexec.bat'].onload();
+          DataRequest.prototype.requests['/AUTOEXEC.FS4'].onload();
+          DataRequest.prototype.requests['/BOEING.MOD'].onload();
+          DataRequest.prototype.requests['/CF.FS4'].onload();
+          DataRequest.prototype.requests['/CGA1.GRA'].onload();
+          DataRequest.prototype.requests['/CGA2.GRA'].onload();
+          DataRequest.prototype.requests['/CONFIG.FS4'].onload();
+          DataRequest.prototype.requests['/CONVERTS.EXE'].onload();
+          DataRequest.prototype.requests['/CROP.APL'].onload();
+          DataRequest.prototype.requests['/DESIGNER.AD1'].onload();
+          DataRequest.prototype.requests['/dosbox.conf'].onload();
+          DataRequest.prototype.requests['/DYNAMIC.FS4'].onload();
+          DataRequest.prototype.requests['/DYNMODEL.AD1'].onload();
+          DataRequest.prototype.requests['/EGA1.GRA'].onload();
+          DataRequest.prototype.requests['/EGB1.GRA'].onload();
+          DataRequest.prototype.requests['/F1'].onload();
+          DataRequest.prototype.requests['/F1.DYN'].onload();
+          DataRequest.prototype.requests['/F6'].onload();
+          DataRequest.prototype.requests['/F6C'].onload();
+          DataRequest.prototype.requests['/F6CSENS'].onload();
+          DataRequest.prototype.requests['/F6H'].onload();
+          DataRequest.prototype.requests['/F6HSENS'].onload();
+          DataRequest.prototype.requests['/F6MSENS'].onload();
+          DataRequest.prototype.requests['/F6SENS'].onload();
+          DataRequest.prototype.requests['/file_id.diz'].onload();
+          DataRequest.prototype.requests['/FOREIGN.FS4'].onload();
+          DataRequest.prototype.requests['/FORM.APL'].onload();
+          DataRequest.prototype.requests['/FORM1.DEM'].onload();
+          DataRequest.prototype.requests['/FORM2.DEM'].onload();
+          DataRequest.prototype.requests['/FORM3.DEM'].onload();
+          DataRequest.prototype.requests['/FORM4.DEM'].onload();
+          DataRequest.prototype.requests['/FORM5.DEM'].onload();
+          DataRequest.prototype.requests['/FORM6.DEM'].onload();
+          DataRequest.prototype.requests['/FORM7.DEM'].onload();
+          DataRequest.prototype.requests['/FS.BAT'].onload();
+          DataRequest.prototype.requests['/FS4.DEM'].onload();
+          DataRequest.prototype.requests['/FS4.EXE'].onload();
+          DataRequest.prototype.requests['/FS4.PIF'].onload();
+          DataRequest.prototype.requests['/INCLR.GRA'].onload();
+          DataRequest.prototype.requests['/KB1.KBD'].onload();
+          DataRequest.prototype.requests['/KB2.KBD'].onload();
+          DataRequest.prototype.requests['/KB3.KBD'].onload();
+          DataRequest.prototype.requests['/LESLIB.FLB'].onload();
+          DataRequest.prototype.requests['/LESSONS.APL'].onload();
+          DataRequest.prototype.requests['/MODES.LBR'].onload();
+          DataRequest.prototype.requests['/MONO.GRA'].onload();
+          DataRequest.prototype.requests['/MULTI.APL'].onload();
+          DataRequest.prototype.requests['/OBJECTS.AD1'].onload();
+          DataRequest.prototype.requests['/PS21.GRA'].onload();
+          DataRequest.prototype.requests['/Read-me.1st'].onload();
+          DataRequest.prototype.requests['/README.AD1'].onload();
+          DataRequest.prototype.requests['/README.DOC'].onload();
+          DataRequest.prototype.requests['/Sd-eur.scn'].onload();
+          DataRequest.prototype.requests['/SEATTLE.DY1'].onload();
+          DataRequest.prototype.requests['/SEATTLE.SC1'].onload();
+          DataRequest.prototype.requests['/SIM1.SIM'].onload();
+          DataRequest.prototype.requests['/SIM2.SIM'].onload();
+          DataRequest.prototype.requests['/SIM3.SIM'].onload();
+          DataRequest.prototype.requests['/SIM4.SIM'].onload();
+          DataRequest.prototype.requests['/SIM5.SIM'].onload();
+          DataRequest.prototype.requests['/SIM6.DRV'].onload();
+          DataRequest.prototype.requests['/SIM7.SIM'].onload();
+          DataRequest.prototype.requests['/SIM8.SIM'].onload();
+          DataRequest.prototype.requests['/SIM9.SIM'].onload();
+          DataRequest.prototype.requests['/SIMA.SIM'].onload();
+          DataRequest.prototype.requests['/SIMB.SIM'].onload();
+          DataRequest.prototype.requests['/SIMC.SIM'].onload();
+          DataRequest.prototype.requests['/SOARING.DEM'].onload();
+          DataRequest.prototype.requests['/STARTUP.MOD'].onload();
+          DataRequest.prototype.requests['/STR.FS4'].onload();
+          DataRequest.prototype.requests['/TGA1.GRA'].onload();
+          DataRequest.prototype.requests['/WW1.APL'].onload();
+          DataRequest.prototype.requests['/_LA1.DEM'].onload();
+          DataRequest.prototype.requests['/_LA2.DEM'].onload();
+          DataRequest.prototype.requests['/_LA3.DEM'].onload();
+          DataRequest.prototype.requests['/_LA4.DEM'].onload();
+          DataRequest.prototype.requests['/_LA5.DEM'].onload();
+          DataRequest.prototype.requests['/_LA6.DEM'].onload();
+          DataRequest.prototype.requests['/_LA7.DEM'].onload();
+          DataRequest.prototype.requests['/_LA8.DEM'].onload();
+          DataRequest.prototype.requests['/_LB1.DEM'].onload();
+          DataRequest.prototype.requests['/_LB2.DEM'].onload();
+          DataRequest.prototype.requests['/_LB3.DEM'].onload();
+          DataRequest.prototype.requests['/_LB4.DEM'].onload();
+          DataRequest.prototype.requests['/_LB5.DEM'].onload();
+          DataRequest.prototype.requests['/_LB6.DEM'].onload();
+          DataRequest.prototype.requests['/_LB7.DEM'].onload();
+          DataRequest.prototype.requests['/_LB8.DEM'].onload();
+          DataRequest.prototype.requests['/_LB9.DEM'].onload();
+          DataRequest.prototype.requests['/_LBA.DEM'].onload();
+          DataRequest.prototype.requests['/_LE1.DEM'].onload();
+          DataRequest.prototype.requests['/_LE2.DEM'].onload();
+          DataRequest.prototype.requests['/_LE3.DEM'].onload();
+          DataRequest.prototype.requests['/_LE4.DEM'].onload();
+          DataRequest.prototype.requests['/_LE5.DEM'].onload();
+          DataRequest.prototype.requests['/_LE6.DEM'].onload();
+          DataRequest.prototype.requests['/_LE7.DEM'].onload();
+          Module['removeRunDependency']('datafile_/Users/ajf/Projects/2015/win95.ajf.me/em-dosbox/src/image.data');
+
+        };
+        Module['addRunDependency']('datafile_/Users/ajf/Projects/2015/win95.ajf.me/em-dosbox/src/image.data');
+
+        if (!Module.preloadResults) Module.preloadResults = {};
+
+        Module.preloadResults[PACKAGE_NAME] = {
+          fromCache: false
+        };
+        if (fetched) {
+          processPackageData(fetched);
+          fetched = null;
+        } else {
+          fetchedCallback = processPackageData;
+        }
+
+      }
+      if (Module['calledRun']) {
+        runWithFS();
+      } else {
+        if (!Module['preRun']) Module['preRun'] = [];
+        Module["preRun"].push(runWithFS); // FS is not initialized yet, wait for it
+      }
+
+    })();
+
+    Module['arguments'] = [ './autoexec.bat' ];
+
+    function stuck_func() {}
+    document.getElementById('showLogs').addEventListener('change', function() {
+      if (document.getElementById('showLogs').checked) {
+        document.getElementById('output').style.display = "block";
+      } else {
+        document.getElementById('output').style.display = "none";
+      }
+    });
+
+    document.getElementById('homepage').addEventListener('click', function() {
+      location.href = '..';
+    });
+  </script>
+  <script async type="text/javascript" src="../dosbox/playdos.js"></script>
+</body>
+
+</html>

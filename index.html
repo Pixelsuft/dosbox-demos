@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>DOSBox Demos</title>
+  <link rel="shortcut icon" type="image/png" href="icon256.png">
+  <style rel="stylesheet" type="text/css">
+    @import url('https://fonts.googleapis.com/css?family=Roboto');
+
+    body {
+      background: rgb(255, 255, 255);
+      background: linear-gradient(90deg, rgba(255, 255, 255, 1) 0%, rgba(190, 244, 255, 1) 100%);
+      text-align: center;
+      display: block;
+      margin: 0px;
+      padding: 0px;
+    }
+
+    * {
+      font-family: Roboto;
+      font-size: 22px;
+      overflow-x: hidden;
+      -webkit-touch-callout: none;
+      -webkit-user-select: none;
+      -khtml-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+      overflow-x: hidden;
+    }
+
+    .topnav {
+      overflow: hidden;
+      background-color: rgba(0, 0, 0, .8);
+    }
+
+    .topnav .link {
+      float: left;
+      display: block;
+      color: #f2f2f2;
+      text-align: center;
+      padding: 16px 16px;
+      text-decoration: none;
+      font-size: 18px;
+      cursor: pointer;
+    }
+
+    .topnav .link:hover {
+      background-color: rgba(0, 0, 0, .4);
+      color: white;
+    }
+
+    .topnav .icon {
+      display: none;
+    }
+
+    .hr_split {
+      border: 0;
+      color: rgba(0, 0, 0, 0);
+      border-bottom: 3px dashed #c1c1c1;
+      opacity: .75;
+    }
+
+    .img_logo {
+      width: 320px;
+      height: 200px;
+      margin: 10px;
+      border-radius: 5%;
+      overflow: hidden;
+    }
+
+    #copyright {
+      color: #898989;
+    }
+
+    #games_list {
+      padding-left: 100px;
+      padding-right: 100px;
+    }
+  </style>
+  <script language="JavaScript" type="text/javascript">
+    const appear_time = 75;
+
+    const game_dirs = [
+      '2048',
+      'adcivi',
+      'bifi',
+      'billedlotto',
+      'doom',
+      'doom2',
+      'dukenukem3d',
+      'dune',
+      'goldmine',
+      'grandprix',
+      'gta',
+      'hugo',
+      'kolibrios',
+      'maze',
+      'mikeos',
+      'monopoly',
+      'msdos',
+      'msflight',
+      'nes',
+      'otd',
+      'simcity',
+      'win101',
+      'win203',
+      'win30a',
+      'win31',
+      'win31ru',
+      'winchicago73g',
+      'win95',
+      'win95ru',
+      'wolf3d',
+    ];
+    //].sort();
+
+    function add_item(item) {
+      var current = game_dirs[item];
+      var image = document.createElement('img');
+      image.className = 'img_logo';
+      if (typeof current == 'object') {
+        image.alt = current[1];
+        current = current[0];
+      }
+      image.id = current;
+      image.src = current + '/image.png';
+      image.addEventListener('dragstart', function(e) {
+        e.preventDefault();
+      });
+      image.addEventListener('click', function(e) {
+        location.href = e.srcElement.id;
+      });
+      games_list.appendChild(image);
+    }
+
+    window.onload = function() {
+      const copyright = document.getElementById('copyright');
+      const games_list = document.getElementById('games_list');
+      copyright.textContent += ' ' + new Date().getFullYear();
+      document.addEventListener('contextmenu', function(e) {
+        e.preventDefault();
+      });
+      for (var i = 0; i < game_dirs.length; i++) {
+        const i_ = i;
+        setTimeout(function() {
+          add_item(i_);
+        }, appear_time * (i_ + 1));
+      }
+      const links = document.getElementsByClassName('link');
+
+      for (var i = 0; i < links.length; i++) {
+        const current_link = links[i];
+        current_link.addEventListener('click', function() {
+          location.href = current_link.getAttribute('href');
+        });
+      }
+    }
+  </script>
+</head>
+
+<body>
+  <div class="topnav" id="pixelTop">
+    <div href="/" class="link">Home</div>
+  </div>
+  <h1>DOSBox Demos</h1>
+  <div id="games_list"></div>
+  <hr class="hr_split">
+  <p id="copyright">&copy; Pixelsuft</p>
+</body>
+
+</html>

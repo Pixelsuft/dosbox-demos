@@ -1,0 +1,701 @@
+@echo off
+c:
+monopoly
+# This is the configuration file for DOSBox 0.74-3. (Please use the latest version of DOSBox)
+# Lines starting with a # are comment lines and are ignored by DOSBox.
+# They are used to (briefly) document the effect of each option.
+
+[sdl]
+#       fullscreen: Start dosbox directly in fullscreen. (Press ALT-Enter to go back)
+#       fulldouble: Use double buffering in fullscreen. It can reduce screen flickering, but it can also result in a slow DOSBox.
+#   fullresolution: What resolution to use for fullscreen: original, desktop or fixed size (e.g. 1024x768).
+#                     Using your monitor's native resolution (desktop) with aspect=true might give the best results.
+#                     If you end up with small window on a large screen, try an output different from surface.
+#                     On Windows 10 with display scaling (Scale and layout) set to a value above 100%, it is recommended
+#                     to use a lower full/windowresolution, in order to avoid window size problems.
+# windowresolution: Scale the window to this size IF the output device supports hardware scaling.
+#                     (output=surface does not!)
+#           output: What video system to use for output.
+#                   Possible values: surface, overlay, opengl, openglnb, ddraw.
+#         autolock: Mouse will automatically lock, if you click on the screen. (Press CTRL-F10 to unlock)
+#      sensitivity: Mouse sensitivity.
+#      waitonerror: Wait before closing the console if dosbox has an error.
+#         priority: Priority levels for dosbox. Second entry behind the comma is for when dosbox is not focused/minimized.
+#                     pause is only valid for the second entry.
+#                   Possible values: lowest, lower, normal, higher, highest, pause.
+#       mapperfile: File used to load/save the key/event mappings from. Resetmapper only works with the defaul value.
+#     usescancodes: Avoid usage of symkeys, might not work on all operating systems.
+
+fullscreen=false
+fulldouble=false
+fullresolution=original
+windowresolution=original
+output=openglnb
+autolock=true
+sensitivity=100
+waitonerror=true
+priority=higher,normal
+mapperfile=mapper-0.74-3.map
+usescancodes=true
+
+[dosbox]
+# language: Select another language file.
+#  machine: The type of machine DOSBox tries to emulate.
+#           Possible values: hercules, cga, tandy, pcjr, ega, vgaonly, svga_s3, svga_et3000, svga_et4000, svga_paradise, vesa_nolfb, vesa_oldvbe.
+# captures: Directory where things like wave, midi, screenshot get captured.
+#  memsize: Amount of memory DOSBox has in megabytes.
+#             This value is best left at its default to avoid problems with some games,
+#             though few games might require a higher value.
+#             There is generally no speed advantage when raising this value.
+
+language=
+machine=svga_s3
+captures=capture
+memsize=32
+
+[render]
+# frameskip: How many frames DOSBox skips before drawing one.
+#    aspect: Do aspect correction, if your output method doesn't support scaling this can slow things down!
+#    scaler: Scaler used to enlarge/enhance low resolution modes. If 'forced' is appended,
+#              then the scaler will be used even if the result might not be desired.
+#              To fit a scaler in the resolution used at full screen may require a border or side bars,
+#              to fill the screen entirely, depending on your hardware, a different scaler/fullresolution might work.
+#            Possible values: none, normal2x, normal3x, advmame2x, advmame3x, advinterp2x, advinterp3x, hq2x, hq3x, 2xsai, super2xsai, supereagle, tv2x, tv3x, rgb2x, rgb3x, scan2x, scan3x.
+
+frameskip=0
+aspect=false
+scaler=normal2x
+
+[cpu]
+#      core: CPU Core used in emulation. auto will switch to dynamic if available and
+#            appropriate.
+#            Possible values: auto, dynamic, normal, simple.
+#   cputype: CPU Type used in emulation. auto is the fastest choice.
+#            Possible values: auto, 386, 386_slow, 486_slow, pentium_slow, 386_prefetch.
+#    cycles: Amount of instructions DOSBox tries to emulate each millisecond.
+#            Setting this value too high results in sound dropouts and lags.
+#            Cycles can be set in 3 ways:
+#              'auto'          tries to guess what a game needs.
+#                              It usually works, but can fail for certain games.
+#              'fixed #number' will set a fixed amount of cycles. This is what you usually
+#                              need if 'auto' fails. (Example: fixed 4000).
+#              'max'           will allocate as much cycles as your computer is able to
+#                              handle.
+#            Possible values: auto, fixed, max.
+#   cycleup: Amount of cycles to decrease/increase with keycombos.(CTRL-F11/CTRL-F12)
+# cycledown: Setting it lower than 100 will be a percentage.
+
+core=dynamic
+cputype=auto
+cycles=max
+cycleup=10
+cycledown=20
+
+[mixer]
+#   nosound: Enable silent mode, sound is still emulated though.
+#      rate: Mixer sample rate, setting any device's rate higher than this will probably lower their sound quality.
+#            Possible values: 44100, 48000, 32000, 22050, 16000, 11025, 8000, 49716.
+# blocksize: Mixer block size, larger blocks might help sound stuttering but sound will also be more lagged.
+#            Possible values: 1024, 2048, 4096, 8192, 512, 256.
+# prebuffer: How many milliseconds of data to keep on top of the blocksize.
+
+nosound=false
+rate=44100
+blocksize=1024
+prebuffer=25
+
+[midi]
+#     mpu401: Type of MPU-401 to emulate.
+#             Possible values: intelligent, uart, none.
+# mididevice: Device that will receive the MIDI data from MPU-401.
+#             Possible values: default, win32, alsa, oss, coreaudio, coremidi, none.
+# midiconfig: Special configuration options for the device driver. This is usually the id of the device you want to use
+#               (find the id with mixer/listmidi).
+#               Or in the case of coreaudio, you can specify a soundfont here.
+#               See the README/Manual for more details.
+
+mpu401=intelligent
+mididevice=default
+midiconfig=
+
+[sblaster]
+#  sbtype: Type of Soundblaster to emulate. gb is Gameblaster.
+#          Possible values: sb1, sb2, sbpro1, sbpro2, sb16, gb, none.
+#  sbbase: The IO address of the soundblaster.
+#          Possible values: 220, 240, 260, 280, 2a0, 2c0, 2e0, 300.
+#     irq: The IRQ number of the soundblaster.
+#          Possible values: 7, 5, 3, 9, 10, 11, 12.
+#     dma: The DMA number of the soundblaster.
+#          Possible values: 1, 5, 0, 3, 6, 7.
+#    hdma: The High DMA number of the soundblaster.
+#          Possible values: 1, 5, 0, 3, 6, 7.
+# sbmixer: Allow the soundblaster mixer to modify the DOSBox mixer.
+# oplmode: Type of OPL emulation. On 'auto' the mode is determined by sblaster type. All OPL modes are Adlib-compatible, except for 'cms'.
+#          Possible values: auto, cms, opl2, dualopl2, opl3, none.
+#  oplemu: Provider for the OPL emulation. compat might provide better quality (see oplrate as well).
+#          Possible values: default, compat, fast.
+# oplrate: Sample rate of OPL music emulation. Use 49716 for highest quality (set the mixer rate accordingly).
+#          Possible values: 44100, 49716, 48000, 32000, 22050, 16000, 11025, 8000.
+
+sbtype=sb16
+sbbase=220
+irq=7
+dma=1
+hdma=5
+sbmixer=true
+oplmode=auto
+oplemu=default
+oplrate=44100
+
+[gus]
+#      gus: Enable the Gravis Ultrasound emulation.
+#  gusrate: Sample rate of Ultrasound emulation.
+#           Possible values: 44100, 48000, 32000, 22050, 16000, 11025, 8000, 49716.
+#  gusbase: The IO base address of the Gravis Ultrasound.
+#           Possible values: 240, 220, 260, 280, 2a0, 2c0, 2e0, 300.
+#   gusirq: The IRQ number of the Gravis Ultrasound.
+#           Possible values: 5, 3, 7, 9, 10, 11, 12.
+#   gusdma: The DMA channel of the Gravis Ultrasound.
+#           Possible values: 3, 0, 1, 5, 6, 7.
+# ultradir: Path to Ultrasound directory. In this directory
+#           there should be a MIDI directory that contains
+#           the patch files for GUS playback. Patch sets used
+#           with Timidity should work fine.
+
+gus=false
+gusrate=44100
+gusbase=240
+gusirq=5
+gusdma=3
+ultradir=C:\ULTRASND
+
+[speaker]
+# pcspeaker: Enable PC-Speaker emulation.
+#    pcrate: Sample rate of the PC-Speaker sound generation.
+#            Possible values: 44100, 48000, 32000, 22050, 16000, 11025, 8000, 49716.
+#     tandy: Enable Tandy Sound System emulation. For 'auto', emulation is present only if machine is set to 'tandy'.
+#            Possible values: auto, on, off.
+# tandyrate: Sample rate of the Tandy 3-Voice generation.
+#            Possible values: 44100, 48000, 32000, 22050, 16000, 11025, 8000, 49716.
+#    disney: Enable Disney Sound Source emulation. (Covox Voice Master and Speech Thing compatible).
+
+pcspeaker=true
+pcrate=44100
+tandy=auto
+tandyrate=44100
+disney=true
+
+[joystick]
+# joysticktype: Type of joystick to emulate: auto (default), none,
+#               2axis (supports two joysticks),
+#               4axis (supports one joystick, first joystick used),
+#               4axis_2 (supports one joystick, second joystick used),
+#               fcs (Thrustmaster), ch (CH Flightstick).
+#               none disables joystick emulation.
+#               auto chooses emulation depending on real joystick(s).
+#               (Remember to reset dosbox's mapperfile if you saved it earlier)
+#               Possible values: auto, 2axis, 4axis, 4axis_2, fcs, ch, none.
+#        timed: enable timed intervals for axis. Experiment with this option, if your joystick drifts (away).
+#     autofire: continuously fires as long as you keep the button pressed.
+#       swap34: swap the 3rd and the 4th axis. Can be useful for certain joysticks.
+#   buttonwrap: enable button wrapping at the number of emulated buttons.
+
+joysticktype=auto
+timed=true
+autofire=false
+swap34=false
+buttonwrap=false
+
+[serial]
+# serial1: set type of device connected to com port.
+#          Can be disabled, dummy, modem, nullmodem, directserial.
+#          Additional parameters must be in the same line in the form of
+#          parameter:value. Parameter for all types is irq (optional).
+#          for directserial: realport (required), rxdelay (optional).
+#                           (realport:COM1 realport:ttyS0).
+#          for modem: listenport (optional).
+#          for nullmodem: server, rxdelay, txdelay, telnet, usedtr,
+#                         transparent, port, inhsocket (all optional).
+#          Example: serial1=modem listenport:5000
+#          Possible values: dummy, disabled, modem, nullmodem, directserial.
+# serial2: see serial1
+#          Possible values: dummy, disabled, modem, nullmodem, directserial.
+# serial3: see serial1
+#          Possible values: dummy, disabled, modem, nullmodem, directserial.
+# serial4: see serial1
+#          Possible values: dummy, disabled, modem, nullmodem, directserial.
+
+serial1=dummy
+serial2=dummy
+serial3=disabled
+serial4=disabled
+
+[dos]
+#            xms: Enable XMS support.
+#            ems: Enable EMS support.
+#            umb: Enable UMB support.
+# keyboardlayout: Language code of the keyboard layout (or none).
+
+xms=true
+ems=true
+umb=true
+keyboardlayout=ru
+
+[ipx]
+# ipx: Enable ipx over UDP/IP emulation.
+
+ipx=true
+
+[autoexec]
+# Lines in this section will be run at startup.
+# You can put your MOUNT lines here.
+
+
+èdúÏ¨U‹ìUé  LL¹ èófèZÿ¡r;=  té¬èi|èk€	The cash ¡t;¹" ÷á—Çu8è¿h¸  è€èG€ hasèW€ègè4|è6€left goes to The Bank.è4€èÞf¡t;¹" ÷á—‹…‚8£19¡t;£39¹ èqfè7¶¹ èhfèœ±¹ è_fèOþ¸ P¸( Y‘+È}éA‰FüQ‹Fü¹ ÷á—‹…:;t;téë¹ è+fè’þè¬{è®The Bank now offers at auction:è£èMf¸ èàY‹Fü¹* ÷á—èq{ÇáBèÝg¸  è1¸. P¸  èž~èsèf¸ è°YèJ{èdèfèA{èC"Have the banker conduct an auctionè5èßeè{è"and then give me the buyer's name.èè°e¸ P¸ P¸' P¸ è	Y¹
+ èGe¸  PèÈ¡	;=  té éè„Wè³zèµ~How much did èie¸ èüX¡	;¹" ÷á—èzÇu8èùf¸  èM~èFe¸ èÙXèszèu~ bidè…~è/eèbzèd~for è!e¸ è´X‹Fü¹* ÷á—èEzÇáBè±f¸  è~èþd¸ è‘Xè+zè-~?  $èêdèLz¿±èo|èÛd¹ è„dèJÊ¡…=ÿÿté é[¡…£19¡	;¹" ÷á—‹…‚8;19|éR ¡	;¹" ÷á—èÒyÇu8è>f¸  è’}èÆ} can't afford that.èÇ}èqd¸@èåY¸È èVVèZ¹ èdèûûéñ¸
+ èéWèƒyè}èGd‹Fü¹* ÷á—èqyÇáBèÝe¸  è1}èe} sold atèq}èdèNyèP}auction to ¡	;¹" ÷á—Çu8è¢e¸  èö|è*} for $¡19P¸  èu|¸. P¸  èO|è$}èÎc¸|èBY¸Xè³Uè`Y¡	;£39¹ èbcè(³‹Fü¹ ÷á—¡	;‰…:¹ èIcè °YItÿFüéôüé–è½xè¿|	The cash ¡t;¹" ÷á—Çu8èe¸  èg|è›| hasè«|èUcèˆxèŠ|left goes to ¡r;¹" ÷á—Çu8èÚd¸  è.|¸. P¸  è›{èp|èc¡t;¹" ÷á—‹…‚8£19¡t;£39¡r;£59¹ è§bèm²¹ èžbè‚©¹ è•bèÉ­¸|èWX¸èèÈTèuX¸ P¸ P¸' P¸ è-V¸ P¸ è@`¸ èKV¸ èYV¸  ¢;¸ P¸( Y‘+È}é, A£lQ¡l¹ ÷á—‹…:;t;té ¸ ¢;YItÿléØÿ ;2ä4uéR ¡t;¹" ÷á—èˆwÇu8èôc¸  èH{è|{ has no propertyè€{è*bè]wè_{to distribute.èe{èbéè?wèA{The property goes to ¡r;¹" ÷á—Çu8è‰c¸  èÝz¸. P¸  èJzè{èÉaèüvèþz$(There will be no interest charges.)èîzè˜a¸ P¸ P¸' P¸ èñT¸ P¸ è_¸ P¸( Y‘+È}éf A£lQ¡l¹ ÷á—‹…:;t;té@ ¹ èú`èÀžè{vè}z   ¡l¹* ÷á—ÇáBè×b¸  è+zèwzè!a¡l¹ ÷á—¡r;‰…:YItÿléžÿ¹ è¯`è†­¹ è¦`è–ø¸ P¸ P¸( P¸ èMT¸  è‰TèÝR¸  £l¸  ¢w;¸ P¡!9Y‘+È}é5 A£jQ¡j¹" ÷á—Š…‰82ä4ué ¡l £l¡j£nYItÿjéÏÿ¡l= té ¸ ¢w; w;2ä4ué éø¸ èS¸ P¸ P¸P P¸ è»S¸  è÷SèKR¸ èÚSètuèvyD         MONOPOLY is a registered trademark of Parker Brothers, Inc.èFyèð_è#uè%yL  MS-DOS adaptation by Don Phillip Gibson, 910 East 11th, Winfield, KS 67156èíxè—_¹% è@_èQaThanks for playing Monopoly.±è‡aè©³¸ P¸ P¸@ P¸ èÂR¸ èþR¸ èäRèLQ¿¨W¡n¹" ÷á—ÇŠ8èÜ`èò` is the WINNER!è÷a±èð`¸ P¿¨è¶`èebP¸ èjèjè¹hèÑiY‘+ÁP¸ èv\è!t¿¨èŽ`¸  èâwè.xèØ^¸ P¸ èV\¸ èaRèûsèýw<Press Any Key>è¯^è.\uéøÿ¿Jè¹s¿ÈèÙuè–^¸ P¸ P¸P P¸ èïQ¸  è+R¸ èRèyP3Àé×Zé Xé¼÷Xé¸÷Xé´÷‹å]Ã   èdIÏ¨U‹ìUé  ƒì¹ èòfèÀ„¹ èéf¸ Pè¼„¹R èÜfè[¤¸ èÛY¸ P¸ P¸P P¸ è}ZèY¸ è¢Zè<|è>€D         MONOPOLY is a registered trademark of Parker Brothers, Inc.è€è¸fèë{èí<             MS-DOS adaptation (C) 1985 Don Phillip Gibson [è­3.22¸] P¸  èÞ~è³è]f¹% èfèhWelcome to the Monopoly Game±èMhèoº¸ P¸ P¸? P¸ èˆYèX¸ è­YèG{èI      Who are the players?èCèíe¿tWè¨g  ±
+è¶g¸  £j¸  £!9¡j £j¸ è[Y¸	 P¸ jè<cèçz¡jP¸  è>~èß~> ..........è”e¸ è'Y¸ P¸ jèc¸d è2f£lèöbuéïÿèÑz¿t±
+èô|è`eèåW¸ èðX¿tèúfè©h=  éŸ ¿tèèf¸ Pègué ¿tWèíf ±
+èýf¸ ˆFçéi ¿tè¾f¿tè·fèfhP¸ è h¸ PèTgué? ~èW¿tè•f¸ P¿tèŠfè9h- èôg±
+è«f¿tW~èèpf±
+èšf¸  ˆFçé ¸ ˆFçŠFç2äÀuéaÿ~óW¿tèDf±
+ènf~óè8fèçg=  é! ¡j£!9¡j¹" ÷á—Çu8W~óèf±
+è;f~óèfè´g=  ¸ tHP¡!9= ¸ tHYÁÀuégþ¡!9= |éº ¸ èÀWè(VèWyèY} Sorry, there have to be at leastèM}è÷cè*yè,}!two players.  Do it again please.è}èÉcèüxè}èÀc¸ èSWèíxèï|!                  <Press Any Key>ècèauéøÿ¿Jè™x¿Èè¹zèvcéDý¹ ècè{Ÿ¸  £h;¸  £j;¹ ècèÕ€¹ èþb¸ PèÑ€¹ èñb¿ÉW¸  P¸z PèÖ€¸ P¡!9Y‘+È}éP A£jQ¹ èÆb¡j¹ ÷á—ÇÇ7W¸o P¡j¹ ÷á—X.…‹IP¸v P¡j¹ ÷á—X.…IPè€YItÿjé´ÿ¸ P¡!9Y‘+È}éÃ A£jQ¡j¹" ÷á—Çu8WÄ~á¸ &‰EÄ~á¸Ü&‰EÄ~á¸  &ˆEÄ~á¸  &‰EÄ~á¸  &‰EÄ~á¸  &ˆEÄ~áƒÇWÄ~áèd±
+è7d¸ PÄ~áèýcè¬eY‘+È}é0 A£lQÄ~á¡løWÄ~á¡lø&Š2äètU_&ˆEYItÿléÔÿÄ~á¸  &‰E ƒÄYItÿjéAÿ¸ P¸( Y‘+È}é? A£jQ¡j¹ ÷á—Ç:WÄ~á¸  &‰Ä~á¸  &ˆEÄ~á¸  &‰EƒÄYItÿjéÅÿ¡!9= té ¸ £ñ:¸ £ó:é+ = té ¸ £ñ:¸ £ó:é = té ¸ £ñ:¸ £ó:¸  £b¸  £9¸  ¢ë:¸  ¢w;¸  ¢v;¸  ¢ê:¸  ¢;¿Wèüb ±èc¹ èÜ`¿ÉW¸  P¸  P¸z P¸z Pè¶~é  ‹å]Ã                                                                                                                                                                                    èdÆÏ¨U‹ìUé  ¸ £;¸  ¢ì:¹ èéfè›©¡b¹" ÷á—‹…€8¹ ÷á—‹…:=  téB¡b¹" ÷á—‹…€8¹* ÷á—è8|ÇáBè¤h¸  èøè,€ isn't owned.è3€èÝfè|è*€èÔf¸  ¢;¸  ¢ê:¸ P¸ èFdèñ{èóWant to è¬f¸ è?ZèÙ{¸P P¸  èè–f¸ è)ZèÃ{èÅurchase it from the bank?èÀèjfè{èŸ     or èXf¸ èëYè…{¸A P¸  èÀ~èBf¸ èÕYèo{èquction it off?èwè!fèT{èVdo some èf¸ è¢Yè<{¸B P¸  èw~èùe¸ èŒYè&{è(usiness first?è.èØeè{è     or èÆe¸ èYYèóz¸G P¸  è.~è°e¸ èCYèÝzèß~o on with the game?èà~èŠe¿Jèœz¿Èè¼|èye È2äè½XPèGj¸P èSj¸A èMj¸B èGj¸G èAjèkué…þ È2äè‘X=P téë ¡b¹" ÷á—‹…€8¹ ÷á—.‹…ÌIP¡b¹" ÷á—X;…‚8é³ èDzè^~èe¸
+ è›Xè5zè7~You can't afford $¡b¹" ÷á—‹…€8¹ ÷á—.‹…ÌIP¸  èa}¸! P¸  è;}è~èºd¸È è.Z¸XèŸVèLZ¸ è>XèØyèÚ}               <Press Any Key>è}dèüauéøÿ¿Jè‡y¿Èè§{èddéýé	 ¹ èdè¦÷éy =A té( ¹ èócè/ø¡	;=  té éçü¡19=  té éÙüéI =B té0 ¹ èÃcèåó¹
+ èºc¡b¹" ÷á—Ç€8Wè°·¹ è¢cèï¼é¡üé =G té	 ¸ ¢v;éAé2= |= ~é%¡b¹" ÷á—‹…€8¹ ÷á—‹…:;btéC èÜxèÞ|You own ¡b¹" ÷á—‹…€8¹* ÷á—ÇáBè)e¸  è}|¸. P¸  èê{è¿|èicéÂ¿‰W¡b¹" ÷á—‹…€8¹ ÷á—‹…:¹" ÷á—Çu8èædèüd owns è
+f±èe¿‰èÍdè|fP¡b¹" ÷á—‹…€8¹* ÷á—ÇáBè®dè]fYÁ=" |é7 è)x¿‰è–d¸  èê{¡b¹" ÷á—‹…€8¹* ÷á—ÇáBèud¸  èÉ{èÂbé$¡b¹" ÷á—‹…€8= té' èÝw¿‰èJd¸  èž{èÒ{Mediterraneanè†béè =
+ té% è®w¿‰èd¸  èo{è£{ConnecticutèYbé» = té) èw¿‰èîc¸  èB{èv{Pennsylvania RRè(béŠ =! té( èPw¿‰è½c¸  è{èE{North CarolinaèøaéZ =# té& è w¿‰èc¸  èázè{PennsylvaniaèÊaé, =$ té$ èòv¿‰è_c¸  è³zèçzShort Line RRè›a¡b¹" ÷á—‹…€8¹ ÷á—Š…:2äÀuéR è®v¸, P¸  èéyè¾zèhaè›vèz but it is mortgaged.  No charge.è‘zè;a¸  ¢;¸  ¢ê:é”éç¡b¹" ÷á—‹…€8¹* ÷á—.Š…øB2ä= té€¸  £;¸ P¸ Y‘+È}éL A£jQ¡jÑà—.‹…ÒB¹ ÷á—‹…:P¡b¹" ÷á—‹…€8¹ ÷á—X;…:té	 ¡; £;YItÿjé¸ÿ¡;= té7 ¸ £19èÇu¸. P¸  èyè×yè`è´uè¶yYour rent is $25.èf`é¢ ¡;= té ¸2 £19¡;= té ¸d £19¡;= té ¸È £19ècuè}yè'`èZuè\yand owns a total of ¡;P¸  è™xè:y railroads.èCyèí_è uè"yYour rent is $¡19P¸  èex¸. P¸  è?xèÁ_ ;2äÀué" èètèêx
+  DOUBLED!èôxèž_¡19¹ ÷é£19èÆtèàxèŠ_éE= té4 ê:2äÀuéŒ ¡df¹
+ ÷é£19è—t¸. P¸  èÒwè§xèQ_è„tè†xYou had rolled ¡dfP¸  èÄw¸. P¸  èžwèsxè_èPtèRxCHANCE charge is $¡19P¸  è‘w¸. P¸  èkwè@xèê^é™¸  £;¸ P¸ Y‘+È}éq A£jQ¡jÑà—.‹…õB¹ ÷á—‹…:P¡b¹" ÷á—‹…€8¹ ÷á—X;…:¸ tHP¡jÑà—.‹…õB¹ ÷á—Š…:2ä4Y#ÁÀué	 ¡; £;YItÿjé“ÿ¡;= té~ ¸ ÷.h£19è~s¸. P¸  è¹vèŽwè8^èksèmwYou had rolled a ¡hP¸  è­vèNw soè_wè	^è<sè>wyour rent is $¡19P¸  èv¸. P¸  è[vè0wèÚ]é‰ ¸
+ ÷.h£19è sèwèÄ]è÷rèùvand owns the other utility too.èîvè˜]èËrèÍv10 times dice roll of ¡hP¸  èvè©v is $¡19P¸  èõu¸. P¸  èÏuè¤vèN]é	=  té¡b¹" ÷á—‹…€8¹ ÷á—‹… :=  téc ¡b¹" ÷á—‹…€8¹* ÷á—.‹…ùB£ï:¹ è²\è_³ ì:2äÀué3 è'rèAvèë\èrè vand the entire color groupèÇ\¸ £;¡;P¡b¹" ÷á—‹…€8¹ ÷á—W¡b¹" ÷á—‹…€8¹ ÷á—‹… :_ÑàøX.÷­ÏI£19è·q¸. P¸  èòtèÇuèq\è¤qè¦uYour rent is $¡19P¸  èét¸. P¸  èÃtè˜uèB\¡b£39¸  ¢î:¹ èß[è¥«¡b¹" ÷á—Š…‰82äÀué8 ¡b¹" ÷á—‹…€8¹ ÷á—‹…:£r;¡b£t;¹ è [èô¸  ¢;¸  ¢ê:éG  î:2äÀué ¹ è|[èžëé{ô¡b¹" ÷á—‹…€8¹ ÷á—‹…:£59¹ èV[è:¢¸  ¢;¸  ¢ê:é  ‹å]Ã                                                       èWÝ ô0´:#¹        ‹ìè4ß0{œ-é"Áé’ éŠ é‘ é%é@ééØé:é¥éöé!	éTééØéØ
+é'éçéRé@éÃé)éÅééHé4é”éé#éæé¬é1é=éÈé½éDéééQéÏ
+éØ
+[U‹ìŒÈŽØ¸ ¸ŽÀè  ^Æ4ÿã¿ ë¿ ë¿ èØÿ—»@ ŽÃ&€& Ï&€  ´ Í´» Í3À‰D‰D
+ÇDÇ &€>I t¸?»‹Ë² ë¸»¹²ˆT*‰D‰D‰\‰LˆlöÕˆl· Š\*´Í|J3À¹ üª@âü„$‰DŒLÆD è?ÇD(  ]ÃèDÿŠ\*€ã€f
+^ˆ\*ãÿ ´ÍéÀ è&ÿ¸@ ŽÀŠ^€d*ï´&€>I t´:Ür*Ü€L*·´ÍŠ\*ëÅèöþèm
+‹F‹^
+= |R‹~¹Ç +Nƒÿ|DHÑèØ+F
+÷Ø‹ÑOÑïÏ×Ày3À;\~‹\;Ã}Éy3ÉúÇ ~ºÇ ;Ê}‰D‰\‰L
+‰TèƒèL
+]Â èˆþèÿ	‹F
+‹^¹Ç ‹Ñ+N+Vë«èoþŠFˆD]Â èaþ¿
+ 3ÛŠ"Dˆ@2OOC€ûrð\2|JŠL2Ò2äŠòŠlŠÆ"D×
+àÒÌÒÎþÍyðˆ%GþÂuâë‘èþè•	ŠFˆD5è ë§èþè„	è÷
+ÆD5 è é³þŠLŠl2ÀŠd5"dÒÀ
+ÄþÍyøˆD4‹\Šl2ÀÒÀ
+DC„ÝuöˆD2‹\2À
+DÒÈ„ÝtKëôˆD3ŠL‹\Óë‹DÓè+ÃH‰D6y	ŠD2"D3ˆD2‹\‹T
+è‰\JWŠD5:DvDŠL2ŠéöÕ&ŠŠà"Á×"Á"å
+Ä&ˆG‹L6ÉxRtü&Š×ªâùŠL3ŠéöÕ&ŠŠà"Á×"Á"å
+Ä&ˆë.ŠD4Šd2"ÄöÔ& %&G‹L6ÉxŠD4üóªŠD4Šd3"ÄöÔ& %&_;TtBöÂtï  érÿÇ°ékÿéµèöüèmèà	èé ýèçüè^‹^\$‹VT&èG	èí	èo]Â èÇüè>‹Fèé	è[éOþèµüè,‹FD‰D<‹D+F
+‰D>‹^\‹T+Vÿt€dþŠFˆDè:
+Dè:]Â
+ èvü÷^ëènüèå‹F€Lè
+‰\‰TèøéìýèRü÷^ëèJüèÁ‹Fè¥	èÞéÒýè8üè¯¸Z +Fè“	èÉé½ýè#üèš‹^\‹T+VÿtŠFˆDèÁDè¾éÆèüûÄF‰DŒDé!ÿèíûèdƒÅè´
+è•
+ƒíÇD2ÿÿÿNxpÿD2‹V
+ÿF
+;Tb;T
+|è‹\2ã Ä|&Š)‹F‰D4‹^è›
+‹ÓJL\JÿL4x¿B*Lƒ× €áÐÍsí;T|è;T§&Š%ÒÌŠF:DvŠÄ×#D
+àÒÄ&ˆ%ëÇèéàþè[ûèÒ‹^
+\‹T+V;\|z;\u;T
+|p;TkŠD F F‰d2è
+‰\8è\ ;d2tQZD8_Y[;T
+~+‰\6‰T:‰L@‰|>JöÂtï°ëÇ  è, ‹\6‹T:‹L@‹|>;T}¿BöÂtï  ëÇ°è ëªè†é7üD4‰T<&Š%ÒÌŠÑ‹LŠÄ"Å:Ft:FtÒÌÑ€úr2ÒO&Š%K;\}Ý¶ ;\8}D*Ñs²*Ñ&ˆ%G&Š%ÒÄC;\ŠÄ"Å:Ft:Ft"d
+f
+öuÑöÖSRWëÊ
+ötÁöÖKSCÿt<ë·ŠÊÒÄ&ˆ%ÿd4è<úVè±è	èåÄ~&Ç  ‹F
+‹Lè	‡F
+FH‹Lè	+N
+A‰Nyé ‹F‹L
+èí‡FFH‹Lèà+NA‰NüŠD˜«’‹F«÷â²öò€ìõ˜Ä‰F‹F«V^ÿNx>V‹^
+‹VÿFWè©L„\¸ ¸ŽØ‹÷_u‹NÑés¤ó¥ëÎ‹^€éöÙ­NÓÀªKuøë¼^è=]Â è5éæúèsùèêèLÄ~&‹]&‹M‰L4Ûtß‹F;D×ÃH;D|ÏŠD&:uÇ˜÷ã²öò€ìõ˜Ä‰D2)FƒFŠFöd$öØˆD>ƒ^ ‹F&EH‹Lèù‰L:‹D‹Nèí‰Fv‹Ù™èèW‹^èáX+ø~ŠF"DödŠÈ¸ÿÿÒè2à‰D6‹D:"Död±*L*È¸ÿÿÒà2à‰D8‹\:3Òè¤W‹^èX+ÇH‰D<y@‰D<¸ ÿ‡D8 D6d7¸ ¸ŽÀëé	ÿÿL4xø‹D2F‹VÿF;Tç;T
+|å‹^èYVÿt8ÿt<‹T6\JŠL>üÅvá u$¬&Š%.×#Â
+ÄªYã¬.×ªâúZ¬&Š%.×#Â
+Äª^ë ­ÓÀ&Š%.×#Â
+ÄZªN­ÓÀ.×JyöZ&Š%#Â
+Äª^é{ÿèý÷èt‹DF
+‹D+F‰FÿtŠFˆD‹F-  x;‰D2÷à‰T8‰D6ÇD4  è7 ÿD4‹D4÷à÷Ð÷ÒùD6T8‹L2÷ñÑâ;ÊÁÑè‰D2;D4}ÕŠFˆDDèLéýø‹D2‡D4‰D2;D4tè	 ‹D2‡D4‰D2÷\4tè ÷\4÷\2tè ÷\2‹^
+\2‹VT4éDDDDXè£èõé¸úè3÷èªÿtÿtÿtÿtÿ4ÿtŠFˆD‹^\‹T+V
+è%÷^ƒ~ t³y÷^÷^ƒ~v¥‹NÉtž¸Z y÷ØPœèD‹D-´ sh‰D2‹Fè÷‹D‰D@‹D‰DB‹D2Fè‹FèÜ‹\y‡\29\2|Ãh‰\4Xèü‹F÷à‰T8‰D:ÆDH¸ÿÿ‰DD‰DFœƒ|2-vè ÐDHƒl2-ƒl4-ëêè Sè [ÐDHÇD2  ƒl4-sêè éüþ‹\2‹D4=- ~¸- ;ÃtaöDHªt“-- ƒë-÷Ø÷ÛSèM÷fÑàƒÒ ‰T6Xè>÷f‹ú)T6‹F‰D>ÇD<  ‹\@‹TBOxè4 ëøè©ÿL6xè' 9\Duð9TFuëÃ‰\D‰TFÃŠC˜÷nD@ŠC˜÷nDBÃÿD<‹D<‹L>R÷à÷Ð÷ÒùD:T8x3÷ñÑâ;ÊZÁÑè  ‡D>+D>¹ öDH´t÷ÙöDH‡t÷ØöDHft‘ØÑÃZÃèpõèç ‹^\‹T+V¸ÿÿ;\|;\;T
+|;Tè<&ŠÒÈ"D˜Pèö X]Â è1õ‹D+D$é¿öè%õ‹D+D&é³öèõ¸Z +Dshé¢öèõ€dïé·õèþô€Lé­õèôô3ÀöDt@éžõèåôè\ €d÷é‘õèØôèO €Lèn éõèÈô‹F‰D(¡ ‰D0éLöè²ôè) €L‹\‹Tè‰\‰TèU éLõè“ôè
+ €dýèE é<õöDt‹|,‹\.ûûƒïWSèº è`[KŠ€ª_uëÃöDtùè ‹L(ãñè âûÃQ‹L0âþYÃöDtÝ¸ ¸ŽÀ‹D»Z ™÷ó‹Â-- s÷Ø ³	öóöØ˜À‹Ø¼9‰|,‹D™»- ÷ó‹ØŠ€IˆD+3ÛWSèA èç[&Š%ˆ öDtöDtŠÄÒÌŠD:DvŠÄS\J×[#D
+ÄÒÀªC_ƒÇ€=ªu¾‰\.ÃŠ˜‹ØŠE˜‹ÐŠD+Ðès‡ÚÐès÷ÛÐès÷Ú\T€dû;\|;\;T
+|;T Ã+\\C€LëÞ+\\Këñ+T
+TBëè+TT
+Jëß‹\‹T;\|1;\,;T
+|';T"è%&Š%ÒÌŠD:DvŠÄS\J×[#D
+àÒÄ&ˆ%Ã‹DDÑè‰D‰D$Ç €‹D
+D@Ñè‰D‰D&ÇD €¸Z ëL‰\‰TÇ €ÇD €Ã‘Š\ÉyöÓ÷ÙöÃS‹D \è	 [öÃ‹D"œ‹Ñ@tH÷át÷Ð÷ÒùWÃD™¹h÷ùÒyÑ’‰Dè°‰D ¸Â+D+ÁsÁèž‰D"‹D»Z öûŠØŠ€ ˆDÃ‹\‰\<‹\‰\>è{ÿ‹\‹T°+\<}÷Û+T>}÷ÚŠà%;Ús‡Ú†Ä‰\2‰T4‰D:‰\8Ñë‰\6‹\<‹T>è;\|;\
+;T
+|;T~öDt:öDt4è^þèÞ ŠD$4t%&Š%ÒÌŠD:DvŠÄS\J×[#D
+àÒÄ&ˆ%‰\<‰T>ÿL8xiŠl:‹D6+D4sD2
+l;‰D6öÅtöÅtKL€ùr2ÉOëC
+Éu±G*LöÅtöÅtJöÂtï°éYÿÇ  éRÿBöÂtï  éEÿÇ°é>ÿÃEEè MM‹F‹^;Ã|“‰F+ØC‰^Ã‹DF
+‹D+F‰F‹DF‹D+F‰FÃ;Áw‘Ã¸( RêÇ ÷Ú€âþ÷êZöÂu  ‹ø‹ÃŠLÓøøŠLIŠÃŠd"Ä*àÒä†ÌÃ=´ r-´ =Z v-´ ÷ØÀ“‹˜J“Ã                                                                                                                                                                                                                                                                                                                                            xïfÜPÂ3¡#(t,Ù0:5–9ï=BBFÙJOXSW¾[æ_d h1l9p9t/x| €Úƒ©‡m‹'Ö’y–šœ¡Ž¤ó§L«—®Õ±µ'¸:»?¾5ÁÄóÆ»ÉsÌÏ´Ñ<Ô³ÖÙoÛ´Ýçß	âäæèÞé¦ë\íÿîðòxóÐôöG÷eøpùhúLûüÙü‚ýþ™þÿ`ÿ¦ÿØÿöÿÿÿ  ÿ  ÿÿ  ÿ    ÿ  ÿÿ  ÿ  ÿÿÿÿÿÿÿÿ û ü ý þ ÿ       üýýýþÿ þÿ þÿ ÿ ÿ  ª  ü ý þ ÿ  ü üýýýþÿ ýþÿ þÿ þÿª ÿüÿýÿþ ü ý ÿ   üüýüýþÿýþÿ ýþÿ ýþÿýþýª þýÿýÿþÿÿ ü ý  üýüýþüýþÿ üýþÿ üýþÿ üýþüýª ýüþüþýþþÿüÿýÿþÿÿ ü ÿ  üüýûüýþÿûüýþÿ ûüýþÿûüª üüýüýýþüþýþþÿüÿýÿÿ ü  ûüûüýûüýþûüýþÿ ûüýþÿª þnþ´þÿZÿ®ÿ                                            
+DarkPurple             2  Cyan         
+ 	      
+  2  LightPurple            d  Orange                d  Red                   –  Yellow                –  Green        # !       
+  È  Blue         ( &         È  RR              $           Util                       GO                                      Mediterranean Avenue      MeditMEDITCommunity Chest                         Baltic Avenue             Balt BALT 
+Income Tax                              Reading Railroad      	   Rea  REA  Oriental Avenue         
+  Ori  ORI  Chance                                  Vermont Avenue            Ver  VER  Connecticut Avenue        Con  CON  just visiting...                        St. Charles Place         StC  STC  Electric Company      
+   Ele  ELE  States Avenue             Sta  STA  Virginia Avenue           Vir  VIR  Pennsylvania Railroad 	   Prr  PRR  St. James Place         
+  StJ  STJ  Community Chest                         Tennessee Avenue          Ten  TEN  New York Avenue           New  NEW  Free Parking                            Kentucky Avenue           Ken  KEN  Chance                                  Indiana Avenue            Ind  IND  Illinois Avenue           Ill  ILL  B & O Railroad        	   B&O  B&O  Atlantic Avenue         
+  Atl  ATL  Ventnor Avenue            Ven  VEN  Water Works           
+   Wat  WAT  Marvin Gardens            Mar  MAR  
+GO TO JAIL                              Pacific Avenue            Pac  PAC  North Carolina Avenue     Nor  NOR  Community Chest                         Pennsylvania Avenue       Pen  PEN  Short Line Railroad   	 
+  Sho  SHO  Chance                                  
+Park Place              
+  Park PARK 
+Luxury Tax                              	Boardwalk                 BoardBOARD  ýÿ ýÿÿÿ ÿÿýÿ ýÿÿÿ ÿÿ   ÿÿ  ýÿ ýÿÿÿýÿÿÿ ÿÿ  ýÿ               <   
+  Z   ú               <    < ´ @Â              È             d    Z &              d    Z &x   ( d ,ÂX              Œ  
+ 2 – Âqî–             Œ  
+ 2 – Âqî    < ´ ô¼„È             ´   F È &î¶              ´   F È &î¶È   P Ü X è              Ü   Z ú ¼k              Ü   Z ú ¼kð   d ,îLÈ               n J Ï~  n J Ï~–               x hR°              ,  ‚ †„Lû,  ‚ †„Lû              @  – Âè°xÈ                           ^ # ¯ ôLÜ               2 È Xx¤ÐU‹ìUé  ¸ P¸ Y‘+È}é A£jQ¡jÑà—¡j‰…&;YItÿjéçÿ¸ P¸ Y‘+È~éL I£jQ¡jèXÄ £l¡jÑà—‹…&;£n¡jÑà—W¡lÑà—‹…&;_‰…&;¡lÑà—¡n‰…&;YAtÿjé¸ÿ¸ P¸ Y‘+È}é A£jQ¡jÑà—¡j‰…F;YItÿjéçÿ¸ P¸ Y‘+È~éL I£jQ¡jèÏÃ £l¡jÑà—‹…F;£n¡jÑà—W¡lÑà—‹…F;_‰…F;¡lÑà—¡n‰…F;YAtÿjé¸ÿé  ‹å]ÃU‹ìUé  ƒìL~²Wè€ÄMONOGRAF.GRAèOÜ~²¹Î5èJÜè Â~²è—Ü¿Éè­ÜèÂé  ‹å]ÃU‹ìUé  ¸„P¸ Y‘+È~é I£jQ¡jèà·YAtÿjéîÿèù·¸èC´é  ‹å]ÃU‹ìUé  ¸@P¸lY‘+È}é A£jQ¡jè£·¸ è´YItÿjéèÿ¸2 è´è°·¸d èú³é  ‹å]ÃU‹ìUé  ¸ P¸ èy¿¿‰W¡b¹" ÷á—Çu8è…Ã±è¯Ã¡9=  é! ¿‰W¿‰èiÃèÃ againèÄ±è†ÃéŒ ¡b¹" ÷á—Çu8èCÃ¡b¹" ÷á—Çu8è2ÃèáÄP¸ è›ÄèÉÅèÄ´=S ué ¿‰W¿‰èÃè$Ã'sè6Ä±è/Ãé ¿‰W¿‰èñÂ¸'PèÄ±èÃ¿‰W¿‰èÙÂèïÂ turnèþÃ±è÷Â¸ P¿‰è½ÂèlÄP¸ èÌèÌèÀÊèÌèœÊèÒËP¸ è{¾¸ è†´è Ö¿‰èÂ¸  èáÙè-Úè×Àé  ‹å]ÃU‹ìUé  ¸ P¸ Y‘+È}é' A£jQ¡j¹Ä	÷éèaÁè ¶¸ è‘²è>¶YItÿjéÝÿ¸( è}²é  ‹å]ÃU‹ìUé  ¡b¹" ÷á—‹…€8= |=
+ ~éF ¸y P¸
+ P¡b¹" ÷á—X÷­€8Y‘+ÁP¡b¹ ÷á—X.…‹I£p¸v P¡b¹ ÷á—X.…I£ré= |= ~éK ¸ P¡b¹ ÷á—X.…I£p¸y P¸
+ P¡b¹" ÷á—‹…€8-
+ Y÷éY‘+ÁP¡b¹ ÷á—X.…‘I£ré« = |= ~éJ ¸ P¸
+ P¡b¹" ÷á—‹…€8- Y÷éYÁP¡b¹ ÷á—X.…“I£p¸ P¡b¹ ÷á—X.…•I£réT = |=( ~éG ¸v P¡b¹ ÷á—X.…—I£p¸ P¸
+ P¡b¹" ÷á—‹…€8- Y÷éYÁP¡b¹ ÷á—X.…™I£ré  ‹å]ÃU‹ìUé  ¸ P¸
+ Y‘+È}é” A£jQ¹ è¡¾¡b¹ ÷á—Ç8W¡pP¡rPè|Ü¸ÐèL´¸( è½°¹ èu¾¡b¹ ÷á—ÇÇ7W¡pP¡rPèPÜ¸¸è ´¸( è‘°¹ èI¾¡b¹ ÷á—Ç‡7W¡pP¡rPè$Ü¸Ä	èô³¸( èe°YItÿjépÿè´é  ‹å]ÃU‹ìUé  ¸ P¸ Y‘+È}é… A£jQ¹ èì½¡b¹ ÷á—Ç8W¡pP¡rPèÇÛ¸( è°¹ èÆ½¡b¹ ÷á—ÇÇ7W¡pP¡rPè¡Û¸( èè¯¹ è ½¡b¹ ÷á—Ç‡7W¡pP¡rPè{Û¸( èÂ¯èo³YItÿjéÿ¹ èl½¡b¹ ÷á—ÇÇ7W¡pP¡rPèGÛé  ‹å]Ãé<U‹ìUé  ¹ è;½èý¸ P¸ è»è²Òè´Ö                      è_½¸ P¸	 èÝºèˆÒèŠÖGO DIRECTLY TO JAIL!è7½¸èP¸È Y‘+È~é· I£jQ¡jè–²¡jP¸d èÈè%ÈèÉÆèáÇP¡jP¸d èÈèÈèµÆèÈèÞÆuér ¸– èØ®¹ è¼¡b¹ ÷á—Ç8W¡pP¡rPèkÚ¸2 è²®¹ èj¼¡b¹ ÷á—Ç‡7W¡pP¡rPèEÚ¸2 èŒ®¹ èD¼¡b¹ ÷á—ÇÇ7W¡pP¡rPèÚYAtÿjéMÿ¸È è[®è²¹ è¼¿—7W¡pP¡rPèõÙ¡b¹" ÷á—¸ ‰…€8¹ èê»è³û¡p £p¹ èØ»¡b¹ ÷á—ÇÇ7W¡pP¡rPè³Ù¹ è¸»è§ý¡b¹" ÷á—¸ ˆ…„8¹ èŸ»¿ÉW¸  P¸  P¸z P¸z PèyÙé  ‹å]ÃU‹ìUé  ¸ P¸ èH¹èóÐèõÔThree doubles in a rowè »¸ P¸ Y‘+È}é| A£jQ¸rP¸Y‘+È~é& I£lQ¡lP¸ èyÆèÆè#Åè;ÆèÚ°YAtÿléÞÿ¸P¸rY‘+È}é& A£lQ¡lP¸ èCÆèIÆèíÄèÆè¤°YItÿléÞÿYItÿjéˆÿ¸d èÿ¬¸rP¸ Y‘+È}é& A£lQ¡lP¸ èüÅèÆè¦Äè¾Åè]°YItÿléÞÿ¸ P¸èY‘+È}é A£lQ¡lè7°YItÿléîÿ¹ è[ºèý¸  £9é  ‹å]ÃU‹ìUé  ¹ è>º¸ èA»¹|÷á—Ç·#W¸Æ P¸0 PèØ¹ èºè™ù¹ èº¸ è»¹|÷á—Ç·#W¸Æ # P¸0 Pèç×¹ èì¹èjùé  ‹å]ÃU‹ìUé  ¹ èÕ¹¿Ÿ2W¸Æ P¸0 Pèº×¹ è¿¹¿5W¸Æ # P¸0 Pè¡×¸ è¯º £d¸ è£º £f¹ èŽ¹¡d¹= ÷á—Çˆ$W¸Æ  P¸0 - Pèc×¹ èh¹¡f¹= ÷á—Çˆ$W¸Æ ( P¸0 - Pè=×¡df£h¡d;fté ¡9 £9é ¸  £9é  ‹å]Ãé£
+U‹ìUé  L¸  ˆFý¡19£n;¸ P¸	 P¸$ P¸ è¬¬¸ èè¬¸ èÎ¬è6«¸ P¸
+ P¸# P¸ è‹¬¸ P¡39¹" ÷á—Çu8èµºèd¼P¸ èÄèÄè¸ÂèÐÃY‘+ÁP¸ èu¶è Îè"Ò--¡39¹" ÷á—Çu8è}º¸  èÑÑèÒ--èÒèÁ¸èôÍèöÑYOU DON'T HAVE ENOUGH CASH.èïÑè™¸¸ P¸ Y‘+È}é% A£jQ¸– èø­¸È èiªè®¸È è`ªYItÿjéßÿ¡39;bué! è‹ÍèÑIT IS NOT YOUR TURN.èÑè7¸¸ P¸( Y‘+È}éI A£jQ¡j¹ ÷á—‹…:;39¸ tHP¡j¹ ÷á—Š…:2ä4Y#ÁÀué ¸ ˆFýYItÿjé»ÿŠFý2äP¡39;b¸ tHY#ÁÀué6 èôÌèöÐYOU MUST RAISE SOME MONEY.èðÐèš·¸ ¢î:¸ ¢x;éŠFý2ä4uéœ ¡39¹" ÷á—¸ ˆ…‰8¸°èZ©èœÌèžÐYOU HAVE NO ASSETS.èŸÐèI·è|Ìè~ÐYOU ARE OUT OF THE GAME!èzÐè$·¸‚ è˜¬¸@è	©¸‚ P¸ Y‘+È~é I£lQ¡lèw¬¸ èè¨YAtÿléèÿ¸Xè×¨è„¬ŠFý2äÀuéT è
+ÌèÐI WILL LOAN UNTIL YOUR TURN.èÐè®¶¡59£l¡39£59¹ èK¶è/ý¡l£59¡39¹" ÷á—¡19‰…•8¸ è*ª¸ èª¸ P¸
+ P¸# P¸ èÐ©¸ P¸ èã³èŽËèÏ<Press Any Key>èB¶èÁ³uéøÿ¿JèLË¿ÈèlÍè)¶é  ‹å]ÃU‹ìUé  ¸ P¡!9Y‘+È}éê A£jQ¡ñ: P¡j- ¹
+ ÷éYÁP¡j¹" ÷á—Çu8è‰·è8¹P¸ èâÀèèÀèŒ¿è¤ÀY‘+ÁP¸ èI³¸ èT©¡j¹" ÷á—Š…‰82äÀué ¸ è8©¡j¹" ÷á—èÉÊÇu8è5·¸  è‰Îè‚µ¡ñ: P¡j- ¹
+ ÷éYÁP¸ èî²¡j¹" ÷á—Š…‰82ä4ué$ èƒÊ¸$ P¸  è¾Í¡j¹" ÷á—‹…‚8P¸ èÆÍè,µYItÿjéÿé  ‹å]ÃU‹ìUé  ¸ èÄ§¸ P¡!9Y‘+È}éA£jQ¸ è‹¨¸ è™¨¡j¹" ÷á—Š…‰82äÀué! ¸ èi¨¡j¹" ÷á—‹…‚8=  té ¸  èb¨¡ó: P¡j- ¹ ÷éYÁP¸ P¡ó:P¡j- ¹ ÷éYÁ P¸ èê§è€¦¸
+ P¡j¹" ÷á—Çu8è¶èÀ·P¸ èj¿èp¿è¾è,¿Y‘+ÁP¸ èÑ±¡j¹" ÷á—èsÉÇu8èßµ¸  è3Íè,´¸ P¸ èª±¡j¹" ÷á—Š…‰82ä4uéƒ è?É¸$ P¸  èzÌ¡j¹" ÷á—‹…‚8P¸ è‚Ìèè³¡j¹" ÷á—‹……8=  éJ ¸ èf§¸ P¸ èK±¸ P¡j¹" ÷á—‹……8Y‘+È}é  A£lQè×È¸* P¸  èÌè”³YItÿléäÿYItÿjé…þé  ‹å]ÃU‹ìUé  ¸ P¸ P¸P P¸ èÉ¦¸  è§èY¥¸ P¡!9Y‘+È}éñ A£jQ¸ P¸( Y‘+È}éÑ A£lQ¡l¹ ÷á—‹…:;jté« ¡l¹* ÷á—.‹…ùB¹# ÷á—.‹…£Aè¦¦¡l¹* ÷á—.‹…ùB¹# ÷á—.‹…¡Aèv¦¡ó:P¡l¹* ÷á—X.…ûBP¡j- ¹ ÷éYÁP¡l¹* ÷á—.‹…ýBè1°¡l¹ ÷á—Š…:2äÀué ¸ è&¦¸  è4¦¡l¹* ÷á—è±ÇÇÿBè´¸  èqËèj²YItÿlé3ÿYItÿjéÿé  ‹å]ÃU‹ìUé  ¹ èï±è½Ï¹ èæ±¸ Pè¹Ï¸ P¸ P¸( P¸ è‰¥¹ èÇ±¿ÉW¸  P¸z Pè¬Ï¹ è±±èÝûé  ‹å]ÃU‹ìUé  ¸ P¡19P¸ èð¼èö¼èš»è²¼Y‘+È}éŠ A£jQ¡39¹" ÷á—W¡39¹" ÷á—‹…‚8- _‰…‚8¡ñ: P¡39- ¹
+ ÷éYÁP¸ è¯¸ è$¥è¾Æ¸$ P¸  èùÉ¡39¹" ÷á—‹…‚8P¸ èÊèg±¸„èÛ¦¸ èL£èù¦¸ èC£YItÿjézÿé  ‹å]ÃU‹ìUé  ¸ P¡19P¸ è8¼è>¼èâºèú»Y‘+È}éŠ A£jQ¡59¹" ÷á—W¡59¹" ÷á—‹…‚8 _‰…‚8¡ñ: P¡59- ¹
+ ÷éYÁP¸ èa®¸ èl¤èÆ¸$ P¸  èAÉ¡59¹" ÷á—‹…‚8P¸ èIÉè¯°¸Üè#¦¸ è”¢èA¦¸ è‹¢YItÿjézÿé  ‹å]ÃU‹ìUé  ¸  ¢î:¡39¹" ÷á—‹…‚8+19=  |é: ¹ è°èòö¡39¹" ÷á—Š…‰82äÀué ¹ èì¯è ûél î:2äÀué é]¸ P¸ P¸P P¸ è£¸ è½£¸ è££¡19=d |é	 ¸ £;é ¸ £;¸ P¡19P¡;èïºèõºè™¹è±ºY‘+È}é… A£jQ¡39¹" ÷á—W¡39¹" ÷á—‹…‚8+;_‰…‚8¡ó: P¡39- ¹ ÷éYÁP¸ è­èÂÄ¸$ P¸  èýÇ¡39¹" ÷á—‹…‚8P¸ èÈèk¯¸„èß¤¸ èP¡èý¤¸ èG¡YItÿjéÿ¡39¹" ÷á—W¡39¹" ÷á—‹…‚8P¡19P¡19P¡;è2ºè8ºèÜ¸èô¹÷.;Y‘+ÁY‘+Á_‰…‚8¡ó: P¡39- ¹ ÷éYÁP¸ èw¬è"Ä¸$ P¸  è]Ç¡39¹" ÷á—‹…‚8P¸ èeÇèË®é  ‹å]ÃU‹ìUé  ¸ P¸ P¸P P¸ è¢¸ èR¢¸ è8¢¡19=d |é	 ¸ £;é ¸ £;¸ P¡19P¡;è„¹èŠ¹è.¸èF¹Y‘+È}é… A£jQ¡59¹" ÷á—W¡59¹" ÷á—‹…‚8;_‰…‚8¡ó: P¡59- ¹ ÷éYÁP¸ è¬«èWÃ¸$ P¸  è’Æ¡59¹" ÷á—‹…‚8P¸ èšÆè ®¸Üèt£¸ èåŸè’£¸ èÜŸYItÿjéÿ¡59¹" ÷á—W¡59¹" ÷á—‹…‚8P¡19P¡19P¡;èÇ¸èÍ¸èq·è‰¸÷.;Y‘+ÁYÁ_‰…‚8¡ó: P¡59- ¹ ÷éYÁP¸ è«è¸Â¸$ P¸  èóÅ¡59¹" ÷á—‹…‚8P¸ èûÅèa­é  ‹å]ÃU‹ìUé  ¸È £19¡b£59¹ èð¬èþûé  ‹å]ÃU‹ìUé  ¹ èÙ¬è¢ì¹ èÐ¬¿—7W¡pP¡rPèµÊ¡b¹" ÷á—W¡b¹" ÷á—‹…€8 _‰…€8¡b¹" ÷á—‹…€8=) té ¡b¹" ÷á—¸ ‰…€8¹ èv¬è?ì¡b¹" ÷á—‹…€8= t= t= t= té	 ¹ èI¬èLê¹ è@¬¡b¹ ÷á—ÇÇ7W¡pP¡rPèÊ¹ è ¬èæé¡b¹" ÷á—‹…€8= té	 ¹ è¬èöþé  ‹å]ÃU‹ìUé  Ä~&‹£$;¡$;¹* ÷á—.‹…ùB¹# ÷á—.‹…£A£#9¡$;¹* ÷á—.‹…ùB¹# ÷á—.‹…¡A£%9¡$;¹* ÷á—.‹…ùB¹# ÷á—.‹…§A£'9¡$;¹* ÷á—.‹…ùB¹# ÷á—.‹…¥A£)9é  ‹å]Â U‹ìUé  ¸ P¸ P¸7 P¸
+ èŸ¸ èNŸè¢¸ P¸ P¸6 P¸	 è÷ž¸ è3Ÿè‡¸ èŸ¸ P¸ èû¨è¦Àè¨ÄMonopolyèa«¸ P¸ P¸P P¸ èºž¸ P¸ èÍ¨¸ èØž¸  èæžèlÀ~èÙ¬¸  è-ÄèyÄè#«¸ P¸ P¸A P¸ è|ž¸ è¸žè¸ P¸ P¸@ P¸ èaž¸ èžèñœé  ‹å]Â U‹ìUé  ¹ è†ªèOê¹ è}ªè·ë¸ P¡hY‘+È}é A£jQ¹ è_ªèvýYItÿjéëÿ¸ P¸ è ¨¸ è+žèÅ¿èÇÃYou have landed onèÉÃèsª¸ P¡b¹" ÷á—‹…€8¹* ÷á—ÇáBèþ«è­­P¸ èWµè]µè´èWµèÝ³èµP¸	 è¼§¡b¹" ÷á—‹…€8¹* ÷á—èT¿ÇáBèÀ«¸  èÃè`Ãè
+ª¹ è³©è¢ëé  ‹å]ÃU‹ìUé  ¹ èœ©èNïèi§uéïÿ¿Jèô¾¿ÈèÁèÑ©¹ èz©è•ï¡9= té ¹ èf©èãíé	 ¹ èZ©èÄþé  ‹å]ÃU‹ìUé  LL¸  ¢ì:¸  ‰Fü¡ï:¹# ÷á—.‹…—A= té@ ¡ï:¹# ÷á—.‹…™A¹ ÷á—‹…:P¡ï:¹# ÷á—.‹…›A¹ ÷á—X;…:té ¸ ¢ì:é– = téŽ ¡ï:¹# ÷á—.‹…™A¹ ÷á—‹…:P¡ï:¹# ÷á—.‹…›A¹ ÷á—X;…:té ¸ ‰Fü¡ï:¹# ÷á—.‹…™A¹ ÷á—‹…:P¡ï:¹# ÷á—.‹…A¹ ÷á—X;…:té	 ‹Fü ‰Fü‹Fü= té ¸ ¢ì:é  ‹å]ÃU‹ìUé  ¡;¹ ÷á—.‹…ÌIP¸ èŠ³è³è4²èÔ±}ÌÌÌÌLè²è<³£l;é  ‹å]ÃU‹ìUé  ¸0 P¸ P¸P P¸ è°›¡#9èì›¸ P¸ è½¥¡$;¹ ÷á—‹… := téz ¡#9= ¸ tHP¡#9= ¸ tHYÁÀué	 ¸ è›é ¸ è‡›è!½¸Û P¸  è\À¸Û P¸  èRÀ¸Û P¸  èHÀ¸Û P¸  è>À¸Û P¸  è4À¸Û P¸  è*Àè¬§è1šéž = |= ~é† ¡#9= ¸ tHP¡#9= ¸ tHYÁÀué	 ¸ è	›é ¸ è ›¸ P¡$;¹ ÷á—‹… :Y‘+È}é4 A£jQè{¼¸Û P¸  è¶¿¸Û P¸  è¬¿¸  P¸  è¢¿è$§YItÿjéÐÿèž™é =  té è™é  ‹å]ÃU‹ìUé  ¸ è«™¸0 P¸ P¸P P¸ èMš¡#9è‰šèÝ˜¹ è‚¦èrþ¸0 P¸ P¸P P¸ è)š¡$;¹ ÷á—Š…:2äÀué2 ¸ è;š¸  èIš¸ P¸ è¤èÅ»èÇ¿	MORTGAGEDèÒ¿è|¦¡#9è#š¡%9è	š¸ P¡$;¹* ÷á—ÇáBè¨è´©P¸ è^±èd±è°è^±èä¯è±P¸ èÃ£¡$;¹* ÷á—èe»ÇáBèÑ§¸  è%¿èq¿è¦¸2 P¸ P¸N P¸ èt™¡'9è°™è˜¡)9è“™¡$;¹* ÷á—.Š…øB2ä=  téùè»è/¿èÙ¥è»è¿        Cost     $¡$;¹ ÷á—.‹…ÌIP¸ èB¾èû¾è¥¥èØºèò¾èœ¥èÏºèÑ¾       Rent       $¡$;¹ ÷á—.‹…ÏIP¸ è¾è½¾èg¥èšºèœ¾        1 house   $¡$;¹ ÷á—.‹…ÑIP¸ èÏ½èˆ¾è2¥¸ P¸ Y‘+È}éY A£jQèPºèR¾        ¡jP¸  è›½è<¾
+ houses  $¡$;¹ ÷á—¡jÑàø.‹…ÏIP¸ èq½è*¾èÔ¤YItÿjé«ÿèü¹èþ½          hotel   $¡$;¹ ÷á—.‹…ÙIP¸ è1½èê½è”¤èÇ¹èá½è‹¤è¾¹èÀ½ Cost of each house is $¡$;¹* ÷á—.‹…ùB¹# ÷á—.‹…©AP¸  èã¼¸. P¸  è½¼è’½è<¤èo¹èq½    Mortgage value is $¡$;¹ ÷á—.‹…ÌIP¸ è¯è¯èÀ­èØ®P¸  è¼¸. P¸  èj¼èì£é= té6è¹è.½èØ£è¹è½        Cost     $¡$;¹ ÷á—.‹…ÌIP¸ èA¼èú¼è¤£è×¸èñ¼è›£èÎ¸èÐ¼       Rent        $  25èÌ¼èv£è©¸è«¼         if 2 RRs  $  50è§¼èQ£è„¸è†¼         if 3 RRs  $ 100è‚¼è,£è_¸èa¼         if 4 RRs  $ 200è]¼è£è:¸èT¼èþ¢è1¸è3¼    Mortgage value is $¡$;¹ ÷á—.‹…ÌIP¸ èØ­èÞ­è‚¬èš­P¸  èR»¸. P¸  è,»è®¢éQ= téIèÖ·èð»èš¢èÍ·èÏ»        Cost     $¡$;¹ ÷á—.‹…ÌIP¸ è»è¼»èf¢è™·è³»è]¢è·è’»Rent if one utility owned isèŠ»è4¢èg·èi»  four times amount on dice.èa»è¢è>·èX»è¢è5·è7»If both utilities are ownedè0»èÚ¡è·è»  then ten times the dice.è	»è³¡èæ¶è »èª¡èÝ¶èßº    Mortgage value is $¡$;¹ ÷á—.‹…ÌIP¸ è„¬èŠ¬è.«èF¬P¸  èþ¹¸. P¸  èØ¹èZ¡é  ‹å]ÃU‹ìUé  ¿‰W¡b¹" ÷á—Çu8èà¢±è
+£¡b¹" ÷á—Çu8èÊ¢¡b¹" ÷á—Çu8è¹¢èh¤P¸ è"¤èP¥èK”=S ué ¿‰W¿‰è•¢è«¢'sè½£±è¶¢é ¿‰W¿‰èx¢¸'Pè¢£±è›¢¿‰W¿‰è`¢èv¢ turnè…£±è~¢¸ P¿‰èD¢èó£P¸ è«è£«èGªè«è#ªèY«P¸ èžè­µ¿‰è¢¸  èn¹èº¹èd é  ‹å]ÃU‹ìUé  ¸ è“¸ P¸ P¸( P¸ è©“¸  èå“è9’¸ P¸ P¸* P¸ èŽ“¸ èÊ“è’¸ P¸ P¸) P¸ ès“¸ è¯“è’¸ è’“¹ è¢Ÿèþ¸ P¸ P¸) P¸ èI“¸ P¸ è\é  ‹å]ÃU‹ìUé  ƒìJ¸ P¸ P¸* P¸ è“¸  èX“è¬‘¸ P¸ P¸( P¸ è“¸ è=“è‘‘¸ P¸ P¸' P¸ èæ’¸ è"“èv‘¸ è“¡b¹" ÷á—Š…„82äÀué1 ~ÙW¡b¹" ÷á—Çu8èê è ¡ is in jail.è¢±$è¡éK ~ÙW¡b¹" ÷á—Çu8è¹ èÏ  on èß¡¡b¹" ÷á—‹…€8¹* ÷á—ÇáBè“ èÁ¡¸.Pèº¡±$è³ ¸ P~Ùèy è(¢P¸ èÒ©èØ©è|¨èÒ©èX¨èŽ©P¸ è7œèâ³~ÙèO ¸  è£·èï·è™ž x;2äÀué ¸ è ’¡n;P¸  P~´±$èfœ~ÙWè1 The amount due is $~´èýŸè+¡¸.Pè$¡±$è ¸ P~ÙèãŸè’¡P¸ è<©èB©èæ§è<©èÂ§èø¨P¸ è¡›èL³~Ùè¹Ÿ¸  è·èY·èž¸ è–‘¸ P¸ P¸' P¸ èV‘¸ P¸ èi›é  ‹å]ÃU‹ìUé  ¸ P¸	 P¸# P¸ è,‘¸ èh‘è¼¸ P¸
+ P¸" P¸ è‘¸ èM‘¸ è3‘è›¸ P¸ P¸" P¸ èð¸ P¸ è›é  ‹å]ÃU‹ìUé  LL¿;Wè&Ÿ ±
+è6Ÿ¸  £	;¸  ¢í:¸  ˆFý¸ P¸ èÉš¸
+ èÔ¸ P¡!9Y‘+È}é± A£jQ¡j¹" ÷á—Çu8W¸  ˆFüŠF2ä=  té Ä~ö&ŠE2ä4ué ¸ ˆFüé1 = té) ¡j;b¸ uHPÄ~ö&ŠE2ä4Y#ÁÀué ¸ ˆFüŠFü2äÀué  èá±èãµ      Ä~öèDž¸  è˜µèäµèŽœ¸ ˆFýƒÄYItÿjéSÿè­±èÇµèqœ¸ èèž±è µWhich? èZœèßŽè½±¿;±
+èÜ³èHœ¿;èëèž è’žué éò ¸ P¿;èÑè€ŸY‘+È}é' A£jQ¡j—W¡j—Š…;2äèP_ˆ…;YItÿjéÝÿ¸ P¡!9Y‘+È}é˜ A£jQ¡j¹" ÷á—Çu8W¿;èsÄ~öƒÇèièžué] ¡j£	;ŠF2ä=  té Ä~ö&ŠE2ä4ué ¸ ¢í:é1 = té) Ä~ö&ŠE2ä4P¡j;b¸ uHY#ÁÀué ¸ ¢í:ƒÄYItÿjélÿ í:2äÀuéõýé  ‹å]Â U‹ìUé  ¸ èÃŽ¸ èÑŽ¸ P¸ è¢˜èM°èO´<Press Any Key>è›è€˜uéøÿé  ‹å]ÃU‹ìUé  è°~Bè‹œ¸  èß³è+´èÕšè°~#èuœ¸  èÉ³è´è¿šèò¯~è_œ¸  è³³èÿ³è©š¸È è¸XèŽŒè;¹ èCšèZÿé  ‹å]Â] U‹ìUé  ¸ÿÿ£…¿èœè4œ èÅœué éh ¿èœ¿…W¿‡è·˜¡‡=  ¸ HP¡…=  ¸ |HYÁÀué2 èb¯èd³Again? èš¸0è’¸XèŒè°èq¯¿±è”±è šé|ÿé  ‹å]ÃU‹ìUé  LL¿;Wè¨› ±è¸›¸  ¢;¸  ˆFý¸  ˆFü¸ P¸( Y‘+È}é<A£jQ¸  ˆFý¡j¹* ÷á—ÇáBWÄ~ö&ŠE2ä=  t= t= téùŠF2ä=  té	 ¸ ˆFýéI= téA ¡j¹ ÷á—‹…:;b¸ tHP¡j¹ ÷á—‹… :=  ¸ tHY#ÁÀué ¸ ˆFýé = téV ¡j¹ ÷á—‹…:;b¸ tHP¡j¹ ÷á—Š…:2ä4Y#ÁP¡j¹ ÷á—‹… :=  ¸ tHY#ÁÀué ¸ ˆFýé¢ = té: ¡j¹ ÷á—‹…:;b¸ tHP¡j¹ ÷á—Š…:2äY#ÁÀué ¸ ˆFýé` = téX ¡j¹ ÷á—‹…:;b¸ uHP¡j¹ ÷á—‹…:=  ¸ uHY#ÁP¡j¹ ÷á—‹… :=  ¸ tHY#ÁÀué ¸ ˆFýŠF2ä= t= t= t= tél ŠFý2äÀué` ¸ PÄ~ö&‹E¹# ÷á—.‹…—AY‘+È}éA A£lQÄ~ö&‹E¹# ÷á—¡lÑàø.‹…—A¹ ÷á—‹… :=  é ¸  ˆFýYItÿléÃÿŠFý2äÀué ¸ ˆFüƒÄYItÿjéÈý¸ P¸ P¸' P¸ èÚŠ¸ P¸	 èí”¸ èøŠ¸ è‹ŠFü2ä4uéÙ ŠF2ä= té ¿¨Wèû˜to sell.±è™éi = té ¿¨WèÚ˜to mortgage.±èÞ˜éD = té ¿¨Wèµ˜to unmortgage.±è·˜é = té ¿¨WèŽ˜to buy.±è—˜¹P èg–èèö¹c è^–èo˜There's nothing ¿¨è>˜èl™±è§˜èL˜ ±èž˜èC˜ ±è•˜è…ûé¹P è–èžö¸ P¸ èé“è”«è–¯Give me the short name of theè¯è7–ŠF2ä= té! è]«è_¯property to sell.èb¯è–é¹ = té% è4«è6¯property to mortgage.è5¯èß•éŒ = té' è«è	¯property to unmortgage.è¯è°•é] = té  èØªèÚ®property to buy.èÞ®èˆ•é5 =  té- è°ªè²® Title Deed Card you want to see.è¦®èP•¸ P¸ P¸ P¸ è©ˆ¸ P¸ è¼’¸  ˆFü¸ P¸( Y‘+È}é°A£jQ¸  ˆFý¡j¹* ÷á—ÇáBWÄ~ö&ŠE2ä=  t= t= témŠF2ä=  té	 ¸ ˆFýéI= téA ¡j¹ ÷á—‹…:;b¸ tHP¡j¹ ÷á—‹… :=  ¸ tHY#ÁÀué ¸ ˆFýé = téV ¡j¹ ÷á—‹…:;b¸ tHP¡j¹ ÷á—Š…:2ä4Y#ÁP¡j¹ ÷á—‹… :=  ¸ tHY#ÁÀué ¸ ˆFýé¢ = té: ¡j¹ ÷á—‹…:;b¸ tHP¡j¹ ÷á—Š…:2äY#ÁÀué ¸ ˆFýé` = téX ¡j¹ ÷á—‹…:;b¸ uHP¡j¹ ÷á—‹…:=  ¸ uHY#ÁP¡j¹ ÷á—‹… :=  ¸ tHY#ÁÀué ¸ ˆFýŠF2ä= t= t= t= tél ŠFý2äÀué` ¸ PÄ~ö&‹E¹# ÷á—.‹…—AY‘+È}éA A£lQÄ~ö&‹E¹# ÷á—¡lÑàø.‹…—A¹ ÷á—‹… :=  é ¸  ˆFýYItÿléÃÿŠFý2äÀuéz Ä~ö&‹E¹# ÷á—.‹…£AèŽ†Ä~ö&‹E¹# ÷á—.‹…¡Aèe†¡j¹ ÷á—Š…:2äÀué ¸  è]†¸ èC†Ä~ö&‹EPÄ~ö&‹Eè Ä~öèÈ§ƒÇè5”¸  è‰«è‚’¸ ˆFüƒÄYItÿjéTý¸ P¸ P¸' P¸ èÇ…¸ P¸	 èÚ¸ èå…¸ èó…èy§è{«Which? è5’èº„è”§¿;±è·©è#’¿;èÆ“èÜ“ èm”ué é¸ P¿;è¬“è[•Y‘+È}é' A£jQ¡j—W¡j—Š…;2äè+…_ˆ…;YItÿjéÝÿ¸ P¸( Y‘+È}éCA£jQ¡j¹* ÷á—ÇáBWÄ~ö&ŠE2ä=  t= t= té¿;è3“Ä~öƒÇ$è)“èÔ“uéí¡j£;ŠF2ä=  té	 ¸ ¢;éI= téA ¡j¹ ÷á—‹…:;b¸ tHP¡j¹ ÷á—‹… :=  ¸ tHY#ÁÀué ¸ ¢;é = téV ¡j¹ ÷á—‹…:;b¸ tHP¡j¹ ÷á—Š…:2ä4Y#ÁP¡j¹ ÷á—‹… :=  ¸ tHY#ÁÀué ¸ ¢;é¢ = té: ¡j¹ ÷á—‹…:;b¸ tHP¡j¹ ÷á—Š…:2äY#ÁÀué ¸ ¢;é` = téX ¡j¹ ÷á—‹…:;b¸ uHP¡j¹ ÷á—‹…:=  ¸ uHY#ÁP¡j¹ ÷á—‹… :=  ¸ tHY#ÁÀué ¸ ¢;ŠF2ä= t= t= t= tél  ;2äÀué` ¸ PÄ~ö&‹E¹# ÷á—.‹…—AY‘+È}éA A£lQÄ~ö&‹E¹# ÷á—¡lÑàø.‹…—A¹ ÷á—‹… :=  é ¸  ¢;YItÿléÃÿƒÄYItÿjéÁý ;2äÀuéüøé  ‹å]Â U‹ìUé  ¹ è	è¾æ¡l;£19¸ P¸ P¸' P¸ èª‚¸  èæ‚¸ èÌ‚è4¸ P¸ P¸' P¸ è‰‚¸ P¸ èœŒ¡;¹ ÷á—‹…:¹" ÷á—è4¤ÇŠ8è ¸  èô§¸: P¸  èa§è6¨èàŽ¸ P¸ Y‘+È}é% A£lQ¸è?„¸È è°€è]„¸È è§€YItÿléßÿèÞ£èà§You have been charged interestèÖ§è€Žè³£èµ§of $¡19P¸  è§è£§ for ¡;¹* ÷á—ÇáBèû¸  èO§è›§èEŽèx£èz§which is mortgaged.è{§è%Ž¡;¹ ÷á—.‹…ÌIP¸ è™è#™èÇ—èß˜P¡;¹ ÷á—X.…ÌI£19¡19P¡39¹" ÷á—X;…‚8é è£è*§èÔè£è	§You cannot afford to payè§è¯èâ¢èä¦the principal costs.èä¦èŽèÁ¢èÛ¦è…è¸¢èº¦          <Press Any Key>èµ¦è_èÞŠuéøÿ¿Jèi¢¿Èè‰¤èFé¤éf¸ P¸	 P¸' P¸ è™€¸ P¸ è¬Š¸ è·€¸  èÅ€èK¢èM¦You can avoid paying theèI¦èóŒè&¢è(¦interest again by payingè$¦èÎŒè¢è¦the principal of $¡19P¸  èB¥èã¥ now.èò¥èœŒèÏ¡èé¥è“ŒèÆ¡èÈ¥Will you pay è|Œ¸ è€è©¡¸N P¸  èä¤èfŒ¸ èùè“¡è•¥ow?è¦¥èPŒèƒ¡è…¥          or è9Œ¸ èÌèf¡¸L P¸  è¡¤è#Œ¸ è¶èP¡èR¥ater?èa¥èŒ¿Jè¡¿Èè=£èú‹ È2äè>PèÈ¸N èÔ¸L èÎèž‘uéšþ È2äè=N té+ ¹ ès‹è9Û¡;¹ ÷á—¸  ˆ…:¹ èZ‹è1Ø¹ èQ‹èžäé  ‹å]ÃU‹ìUé  ¹
+ è:‹¸ PèŽñ¿;è'è= èÎué é(¹P è‹è˜ë¹
+ è‹¿;Wèß¹ è ‹èMä¹P è÷Šèxëèx èz¤What price has ¡;¹ ÷á—‹…:¹" ÷á—Çu8è¾Œ¸  è¤è^¤è‹è; è=¤quoted for you to buyè<¤èæŠ¡;¹* ÷á—è ÇáBè|Œ¸  èÐ£è¤?  $èÁŠè# ¿±èF¢è²Š¹ è[Šè!ð¡…=ÿÿté éU¡…£19¸  £l;¡;¹ ÷á—Š…:2äÀué< ¹ è"Šè×áè£Ÿè¥£Your interest is $¡l;P¸  èä¢¸. P¸  è¾¢è“£è=Š¡19l;£19¡b¹" ÷á—‹…‚8;19|é[ ¡19P¸  P¿¨±èü‡¹c èµ‰èÆ‹You can't afford $¿¨è“‹èÁŒ¸.PèºŒ±èõ‹èš‹ ±èì‹è‘‹ ±èã‹èÓîé| ¡b£39¡;¹ ÷á—‹…:£59¹ èU‰èÙ¡;¹ ÷á—Š…:2äÀué ¡…£19¹ è0‰èÐ¡;¹ ÷á—¡b‰…:¹ è‰èîÕ¡;¹ ÷á—Š…:2äÀué	 ¹ èøˆèßùé  ‹å]ÃU‹ìUé  ¹
+ èáˆ¸ Pè5ï¿;èÎŠèäŠ èu‹ué é ¹
+ è¾ˆ¿;Wè¾Ü¹ è°ˆèýá¡!9= té( ¸ +b£	;¿;W¡	;¹" ÷á—Çu8è}Š±
+è§Šé ¹P ètˆèõèèõè÷¡Give me the name of theèô¡èžˆèÑèÓ¡player you are sellingèÑ¡è{ˆ¡;¹* ÷á—è¥ÇáBèŠ¸  èe¡è™¡ to.èVˆ¹
+ èÿ‡¸ PèÕê¡	;=  té é&¹P èä‡èeèèeèg¡What price have ¡	;¹" ÷á—Çu8è´‰¸  è¡è<¡ andèL¡èö‡è)è+¡you agreed on to sellè*¡èÔ‡¡;¹* ÷á—èþœÇáBèj‰¸  è¾ èò ?  $è¯‡è¿±è4Ÿè ‡¹ èI‡èí¡…=ÿÿté ét¡…£19¸  £l;¡;¹ ÷á—Š…:2äÀuéT ¹ è‡èÅÞ¡	;¹" ÷á—èˆœÇu8èôˆ¸  èH è|  pays interest of $¡l;P¸  èºŸ¸. P¸  è”Ÿèi è‡¡19l;£19¡	;¹" ÷á—‹…‚8;19|él ¡19P¸  P¿¨±èÒ„¹c è‹†¡	;¹" ÷á—Çu8èuˆè‹ˆ can't afford $è‰¿¨èXˆè†‰¸.Pè‰±èºˆè_ˆ ±è±ˆèVˆ ±è¨ˆè˜ëér ¡	;£39¡b£59¹ è$†èêÕ¡;¹ ÷á—Š…:2äÀué ¡…£19¹ èÿ…èãÌ¡;¹ ÷á—¡	;‰…:¹ èæ…è½Ò¡;¹ ÷á—Š…:2äÀué	 ¹ èÇ…è®öé  ‹å]ÃU‹ìUé  ¹
+ è°…¸ Pèì¿;è‡è³‡ èDˆué é]¹ è…èBÝ¡;¹ ÷á—.‹…ÌIP¸ èÓèÙè}è•P¡;¹ ÷á—X.…ÌIl;£19¡b¹" ÷á—‹…‚8;19|ée ¸ P¸	 èƒ¡19P¸  P¿¨±èeƒ¹c è…è/‡You can't afford $¿¨èü†è*ˆ¸.Pè#ˆ±è^‡è‡ ±èU‡èú† ±èL‡è<êé¤ ¸ è¾x¸ P¸	 è£‚è w¡;¹* ÷á—èBšÇáBè®†¸  èžèNžèø„è+šè-žunmortgaged for $¡19P¸  èm¸. P¸  èGèžèÆ„¡b£39¹ èi„è/Ô¡;¹ ÷á—¸  ˆ…:¹
+ èP„¿;WèPØ¹ èB„èÝ¹ è9„èÑé  ‹å]ÃU‹ìUé  ¹
+ è"„¸ Pèvê¿;è†è%† è¶†ué éÃ ¡;¹ ÷á—.‹…ÌIP¸ èNèTèøè£19¸ èÈw¸ P¸	 è­èªv¡;¹* ÷á—èL™ÇáBè¸…¸  èèXè„è5™è7mortgaged for $¡19P¸  èyœ¸. P¸  èSœè(èÒƒ¡b£59¹ èuƒèYÊ¡;¹ ÷á—¸ ˆ…:¹
+ è\ƒ¿;Wè\×¹ èNƒè›Ü¹ èEƒèÐé  ‹å]ÃU‹ìUé  ƒì¸  ‰F÷¸  £`¸  ¢;¸  ‰Fû¸ P¸ Y‘+È}éA£jQ¸  ˆFý¡j¹# ÷á—ÇŠAWÄ~ñ&‹E¹ ÷á—‹…:;btéÖ ¡j£ï:¹ èÉ‚èvÙ ì:2äÀué» ¸ ˆFý¸  ‰F÷¸ PÄ~ñ&‹EY‘+È}é€ A£lQŠF2ä= té* Ä~ñ¡lÑàø&‹E¹ ÷á—Š…:2äÀué ¸  ˆFýé9 =  té1 ‹F÷PÄ~ñ¡lÑàø&‹E¹ ÷á—X… :‰F÷‹F÷=  té ¸  ˆFýYItÿlé„ÿŠFý2äÀué ‹Fû ‰Fû¡j‰FùƒÄYItÿjéìþ¸ èÕu¸ èãu‹Fû=  téè ¹P èÔèUâŠF2ä=  téM ¹c è¾èÏƒYou have no houses or±è„è±ƒhotels to return.±èòƒè—ƒ ±èéƒèÙæé‚ = téz ¹c èièzƒYou have no property to build±è¯ƒèTƒon.  The entire color group±è‹ƒè0ƒmust be owned and unmortgaged.±èdƒèTæéó‹Fû= té	 ‹Fù£`éß¸  ‰Fû¹P èÒ€èSá¸ P¸ èž~èI–èKšTell me the color groupèHšèò€ŠF2ä=  té' è–èšto return improvements.èšèÁ€é) = té! èé•èë™you wish to improve.èë™è•€¸ P¸ P¸' P¸ èîs¸ P¸ è~¸  ‰F÷¸  £`¸  ¢;¸ P¸ Y‘+È}éA£jQ¸  ˆFý¡j¹# ÷á—ÇŠAWÄ~ñ&‹E¹ ÷á—‹…:;btéÎ¡j£ï:¹ èÆèsÖ ì:2äÀué³¸ ˆFý¸  ‰F÷¸ PÄ~ñ&‹EY‘+È}é€ A£lQŠF2ä= té* Ä~ñ¡lÑàø&‹E¹ ÷á—Š…:2äÀué ¸  ˆFýé9 =  té1 ‹F÷PÄ~ñ¡lÑàø&‹E¹ ÷á—X… :‰F÷‹F÷=  té ¸  ˆFýYItÿlé„ÿŠFý2äÀué¸ èsè‰”è‹˜     èG¡j¹# ÷á—.‹…£Aèãrèi”èk˜  è*¸ è½rèW”¡j¹# ÷á—ÇŠAèº€¸ P¸ è#‚¸  è˜èý~¡j¹# ÷á—.‹…¡Aè…rè”¡j¹# ÷á—ÇŠAè‚€¸ P¡j¹# ÷á—ÇŠAèm€è‚- è×¸  è¸—è±~¸ P¸ P¡j¹# ÷á—ÇŠAèB€èñY‘+ÁY‘+È}é  A£lQè¶“¸  P¸  èñ–ès~YItÿléäÿè›“¸  P¸  èÖ–è«—èU~ƒÄYItÿjéôý¸ èîq¸ èÔqèn“èp—    or è*~¸ è½qèW“¸N P¸  è’–è~¸ è§qèA“èC—one... changed my mind.èí}¿Jèÿ’¿Èè•èÜ} È2äè qPèª‚¸L è¶‚¸C è°‚¸D èª‚¸O è¤‚¸R èž‚¸Y è˜‚¸G è’‚¸B èŒ‚¸N è†‚èVƒué¥ÿ È2äèÖp=L té ¿õ:Wè=LightPurple±èBéæ =C té ¿õ:WèCyan±è%éÉ =D té ¿õ:Wèü~
+DarkPurple±èé¦ =O té ¿õ:WèÙ~Orange±èã~é‡ =R té ¿õ:Wèº~Red±èÇ~ék =Y té ¿õ:Wèž~Yellow±è¨~éL =G té ¿õ:Wè~Green±èŠ~é. =B té ¿õ:Wèa~Blue±èm~é =N té	 ¸  £`é0¸ P¸ Y‘+È}éA£jQ¡j¹# ÷á—ÇŠAW¿õ:èÿ}Ä~ñèø}è£~PÄ~ñ&‹E¹ ÷á—‹…:;b¸ tHY#ÁÀué» ¡j£ï:¹ èÈ{èuÒ ì:2äÀué  ¸ ¢;¡j£`¸ PÄ~ñ&‹EY‘+È}é€ A£lQŠF2ä= té* Ä~ñ¡lÑàø&‹E¹ ÷á—Š…:2äÀué ¸  ¢;é9 =  té1 ‹F÷PÄ~ñ¡lÑàø&‹E¹ ÷á—X… :‰F÷‹F÷=  té ¸  ¢;YItÿlé„ÿƒÄYItÿjéðþ ;2äÀué!úé  ‹å]Â U‹ìUé  ¸  £";¹ èãz¸  Pè¡÷¡`=  té éY¡`£l¹
+ èÂz¡l¹# ÷á—Ç™AWè¸Î¹ èªzè÷Ó¹P è¡zè"Û¸  £n¸ P¡l¹# ÷á—.‹…—AY‘+È}é6 A£jQ¡l¹# ÷á—¡jÑàø.‹…—A¹ ÷á—‹… :n£nYItÿjéÎÿèËèÍ“
+There are ¡nP¸  è“èµ“
+ units on èlz¡l¹# ÷á—.‹…¡Aèôm¡l¹# ÷á—.‹…£Aè÷m¡l¹# ÷á—ètÇŠAèà{¸  è4“è-z¸ èÀm¸ èÎmèT¸. P¸  è’èd“èzèAèC“Each will bring $¡l¹# ÷á—.‹…©AP¸ èî„èô„è˜ƒè°„P¸  èh’¸. P¸  èB’è“èÁyèôŽè“è¸yèëŽèí’How many units to return? è”yèöŽ¿±è‘è…y¹ è.yèôÞ¡…=ÿÿté é¨¡…£";¡";=  té é”¸  ¢;¡";;né+ è{Žè•’è?yèrŽèt’	Too many.è’è)y¹ èÒxèéÝé ¸ ¢; ;2äÀuéþ¡";P¡l¹# ÷á—.‹…©AP¸ èÿƒè„è©‚èÁƒY÷é£19èŽè0’èÚxèŽè’That will bring $¡19P¸  èO‘¸. P¸  è)‘èþ‘è¨x¡b£59¹ èKxè/¿¸ P¡";Y‘+È}éÃA£nQ¡l¹# ÷á—W¡l¹# ÷á—.‹…«A- _.‰…«A¡l¹# ÷á—.‹…«A= |é ¡l¹# ÷á—W¡l¹# ÷á—.‹…—A_.‰…«A¹
+ èØw¡l¹# ÷á—W¡l¹# ÷á—.‹…«A_ÑàøÇ—AWèºË¹ è¬wèùÐ¸Ä	P¸èY‘+È~é I£jQ¡jèYmYAtÿjéîÿ¡l¹# ÷á—W¡l¹# ÷á—.‹…«A_Ñàø.‹…—A¹ ÷á—W¡l¹# ÷á—W¡l¹# ÷á—.‹…«A_Ñàø.‹…—A¹ ÷á—‹… :- _‰… :¹ è wèÏ¸2 P¸ P¸N P¸ èÇj¸ P¸ èÚt¸èP¸Y‘+È}é A£jQ¡jè±lYItÿjéîÿ¸P¸Y‘+È~é I£jQ¡jè‹lYAtÿjéîÿ¸P¸XY‘+È}é A£jQ¡jèelYItÿjéîÿ¹ è‰vèO´¸2 èÂhYItÿnéAþé  ‹å]ÃU‹ìUé  ¿õ:Wèsx ±èƒx¸  ¢;¹ èMv¸ Pèó¡`=  té é¡`£l¹
+ è,v¡l¹# ÷á—Ç™AWè"Ê¹ èvèaÏ¹P èvèŒÖ¸  £";¸  £n¸ P¡l¹# ÷á—.‹…—AY‘+È}é6 A£jQ¡l¹# ÷á—¡jÑàø.‹…—A¹ ÷á—‹… :n£nYItÿjéÎÿ¡l¹# ÷á—.‹…—A¹ ÷é;ntéb ¹c è‰uèšwThat property is already fully±èÎwèswdeveloped.  No more building.±è¨wèMw ±èŸwèÚéè±Šè³ŽZoning Regulations allow ¡l¹# ÷á—.‹…—A¹ ÷éP¸  èÛè”Žè>uèqŠèsŽunits in the è'u¡l¹# ÷á—.‹…¡Aè¯h¡l¹# ÷á—.‹…£Aè²h¡l¹# ÷á—è/ŠÇŠAè›v¸  èïèèt¸ è{h¸ è‰hèŠèŽ group.èŽèÈtèû‰èý
+There are è´t¸  £n¸ P¡l¹# ÷á—.‹…—AY‘+È}é6 A£jQ¡l¹# ÷á—¡jÑàø.‹…—A¹ ÷á—‹… :n£nYItÿjéÎÿ¡n=  té è…‰è‡noèFté èv‰¡nP¸  èÍŒè3tèf‰èh units now.èqètèN‰èPEach unit costs $¡l¹# ÷á—.‹…©AP¸  è…Œ¸. P¸  è_Œè4èÞsè‰è+èÕsè‰è
+How many units will you buy? è®sè‰¿±è3‹èŸs¹ èHsèÙ¡…=ÿÿté é¡…£";¡";=  té éù¸  ¢;¡";nP¡l¹# ÷á—.‹…—A¹ ÷éY‘;Á~é ¸ ¢; ;2ä4ué( èkˆè…Œè/sèbˆèdŒ	Too many.èoŒès¹ èÂrèÙ× ;2äÀué¢ü¡";P¡l¹# ÷á—X.÷­©A£19¡b¹" ÷á—‹…‚8;19|é> èˆèŒYou can't afford that.èŒèµr¸@è)h¸È èšdèGh¹ èOrèf×éèÍ‡èç‹è‘rèÄ‡èÆ‹That will cost $¡19P¸  è‹¸. P¸  èáŠè¶‹è`r¡b£39¹ èrèÉÁ¸ P¡";Y‘+È}éÆA£nQ¹
+ èåq¡l¹# ÷á—W¡l¹# ÷á—.‹…«A_ÑàøÇ—AWèÇÅ¹ è¹qèË¹ è°qèv¯¡l¹# ÷á—W¡l¹# ÷á—.‹…«A_Ñàø.‹…—A¹ ÷á—W¡l¹# ÷á—W¡l¹# ÷á—.‹…«A_Ñàø.‹…—A¹ ÷á—‹… : _‰… :¹ èJqè:É¸2 P¸ P¸N P¸ èñd¸ P¸ èo¸èP¸Ä	Y‘+È}é A£jQ¡jèÛfYItÿjéîÿ¸Ä	P¸ôY‘+È~é I£jQ¡jèµfYAtÿjéîÿ¸èP¸ÐY‘+È}é A£jQ¡jèfYItÿjéîÿ¸ÐP¸,Y‘+È~é I£jQ¡jèifYAtÿjéîÿ¸2 èÏbè|f¡l¹# ÷á—W¡l¹# ÷á—.‹…«A _.‰…«A¡l¹# ÷á—.‹…«AP¡l¹# ÷á—X.;…—Aé ¡l¹# ÷á—¸ .‰…«AYItÿné>þé  ‹å]ÃU‹ìUé  ¹
+ èp¸  PèjÖ¿;èrèr èªrué é ¹
+ èóo¿;WèóÃ¹ èåoè2Éé  ‹å]ÃU‹ìUé  ¹P èÎoèOÐ¸ P¸ èšmèE…èG‰Want to è p¸ è“cè-…¸B P¸  èhˆèêo¸ è}cè…è‰uy from another player?è‰èÀoèó„èõˆ     or è®o¸ èAcèÛ„¸S P¸  èˆè˜o¸ è+cèÅ„èÇˆell to another player?èÅˆèooè¢„è¤ˆ or buy è]o¸ èðbèŠ„¸H P¸  èÅ‡èGo¸ èÚbèt„èvˆouses and Hotels?èyˆè#oèV„èXˆ or see èo¸ è¤bè>„¸T P¸  èy‡èûn¸ èŽbè(„è*ˆitle Deed card?è/ˆèÙnè„èˆ     or èÇn¸ èZbèôƒ¸M P¸  è/‡è±n¸ èDbèÞƒèà‡ortgage property?èã‡ènèÀƒèÂ‡     or è{n¸ èbè¨ƒ¸R P¸  èã†èen¸ èøaè’ƒè”‡eturn Houses?è›‡èEnèxƒèz‡     or è3n¸ èÆaè`ƒ¸U P¸  è›†èn¸ è°aèJƒèL‡nmortgage property?èM‡è÷mè*ƒè,‡     or èåm¸ èxaèƒ¸G P¸  èM†èÏm¸ èbaèü‚èþ†o on with game?è‡è­m¿Jè¿‚¿Èèß„èœm È2äèà`Pèjr¸B èvr¸S èpr¸H èjr¸T èdr¸M è^r¸R èXr¸U èRr¸G èLrèsué<ý È2äèœ`=B té ¹ èñlè§áéƒ =S té ¹ èÝlèìãéo =H té ¹ èÉlèXöé[ =T té ¹ èµlèüéG =M té ¹ è¡lèoèé3 =R té ¹ èlè”ñé =U té ¹ èylè¹æé =G té é é‘üé  ‹å]ÃU‹ìUé  ¹ èQlè¯¡b¹" ÷á—‹…€8¹* ÷á—è¿ÇáBè+n¸  è…è³… purchased.è¼…èfl¡b¹" ÷á—‹…€8¹ ÷á—¡b‰…:¹ èõkèÌ¸¡b¹" ÷á—‹…€8¹ ÷á—.‹…ÌI£19¡b£39¹ èËkè‘»é  ‹å]ÃU‹ìUé  ¹ è´kèf®è5è7…"Have the banker conduct an auctionè)…èÓkèè…"and then give me the buyer's name.èú„è¤k¹
+ èMk¸  Pè#Î¡	;=  té é¹ è2kèä­è³€èµ„How much did ¡	;¹" ÷á—Çu8èm¸  èY„è„ bidè„èGkèz€è|„for ¡b¹" ÷á—‹…€8¹* ÷á—ÇáBèËl¸  è„èS„?  $èkèr€¿±è•‚èk¹ èªjèpÐ¡…=ÿÿté	 ¸  £19éf¡…£19¡	;¹" ÷á—‹…‚8;19|éŒ ¸
+ è[^¡	;¹" ÷á—èìÇu8èXl¸  è¬ƒèàƒ can't afford that.èáƒè‹jè¾èÀƒ        <Press Any Key>è½ƒègj¸@èÛ_¸È èL\èù_è×guéøÿ¿Jèb¿Èè‚è?jé1þ¡	;£39¹ èßiè¥¹¡b¹" ÷á—‹…€8¹ ÷á—¡	;‰…:¹ è¼iè“¶¹ è³ièe¬¡b¹" ÷á—‹…€8¹* ÷á—è!ÇáBèk¸  èá‚èƒ sold atè!ƒèËièþ~è ƒauction to ¡	;¹" ÷á—Çu8èRk¸  è¦‚èÚ‚ for $¡19P¸  è%‚¸. P¸  èÿèÔ‚è~ié  ‹å]ÃU‹ìUé  ¹ èièË¸ P¸ èåfè~è’‚Want to do some èCi¸ èÖ\èp~¸B P¸  è«è-i¸ èÀ\èZ~è\‚usiness?èh‚èièE~èG‚    or ready to èøh¸ è‹\è%~¸G P¸  è`èâh¸ èu\è~è‚o on?è ‚èÊh¿JèÜ}¿Èèüè¹h È2äèý[Pè‡m¸B è“m¸G èmè]nué2ÿ È2äèÝ[=B té$ ¸ P¸	 P¸# P¸ èâ[¸  è\èrZ¹ èhè9øé  ‹å]ÃU‹ìUé  ¸ P¸ P¸' P¸ è°[¸ èì[¸ èÒ[¸d è­]¸ôèZèË]¸ P¸ è¨eèS}èU<Press Any Key>èhè†euéøÿ¿Jè}¿Èè1èîgé  ‹å]ÃU‹ìUé  ¸ P¸ P¸P P¸ è9[¸  èu[èÉY¹ èngè¢²¹ èegè<´¸ P¸ P¸( P¸ è[¸ èH[èœY¸ P¸ P¸' P¸ èñZ¸ è[¸ P¸ èþdé  ‹å]ÃéèUdÿÿmonocode.000 i=È´U‹ìUé  ¹ èüZ¸ 	º  èØóé  ‹å]Ã
+Income Tax                          refund                                                                   Collect $20.                                                             You have won                        SECOND PRIZE                        in a                                Beauty Contest.                     Collect $10.                                                             From sale of stock                  you get $45.                                                                                                  
+BANK ERROR                          in your favor.                                                           Collect $200.                                                                                                 You inherit                         $100.                                                                                                         LIFE                                	INSURANCE                           MATURES                                                                  Collect $100.                                                            Receive for                         services                            $25.                                                                                                          	XMAS FUND                           MATURES                             Collect $100.                                                                                                 Doctor's Fee.                                                            Pay $50.                                                                                                      Pay                                 
+School Tax                          of $150.                                                                                                      Pay                                 Hospital                            $100                                                                     Grand Opera Opening                                                      collect $50 from every player       for opening night seats.                                                                                      #You are assessed for street repairs $40 per house,                      $115 per hotel.                                                                                               ADVANCE TO GO                                                            (Collect $200)                                                           GO TO JAIL.                                                              Go Directly to Jail.                Do Not Pass Go.                     Do Not Collect $200.                GET OUT                             OF JAIL, FREE.                                                           #This card may be kept until needed.                                                                           Bank pays you                       dividend of $50.                                                                                              Your building                       and loan matures.                                                        Collect $150.                                                                                                 Pay                                 Poor Tax                            of $15.                                                                                                       Advance to GO.                      (Collect $200)                                                                                                                                     
+Advance to                          Illinois Avenue.                                                                                              Take a walk on the board walk.                                           ADVANCE TOKEN                       TO BOARDWALK                                                             Advance to St. Charles Place                                             If you pass GO,                     collect $200.                                                                                                 Take a ride on the Reading.         If you pass GO, collect $200.                                                                                 $Advance token to the nearest utility$If unowned you may buy it from bank.                                     If owned, pay owner a total ten     times the amount shown on dice.     Advance token to the nearest         Railroad and pay owner twice the    rental to which he is otherwise     entitled.  If RR is unowned you     may buy it from the bank.           Advance token to the nearest         Railroad and pay owner twice the    rental to which he is otherwise     entitled.  If RR is unowned you     may buy it from the bank.           Make general repairs on             all your property                                                        For each house pay $25.             For each hotel pay $100.            You have been                       elected                             Chairman of the Board.                                                   Pay each player $50.                                                     GO BACK                             3 SPACES                                                                                                      Go Directly to Jail.                                                     Do not pass GO.                     Do not collect $200.                                                     #This card may be kept until needed.                                                                           Get Out of Jail Free.                                                    U‹ìUé  ¿:è¹EèÏECHANCEèZFué ¸ £:¸ £:¸ £ :¿:èŽEè¤ECOMMUNITY CHESTè&Fué ¸ £:¸ £:¸ £ :¸ P¸ P¸P P¸ è7¸  èL7è 5¡:è/7¸( P¿:è5EèäFP¸ èŽNè”Nè8MèPNY‘+ÁP¸ èõ@è X¿:èE¸  èa\èZC¸ P¸ P¸< P¸ è³6¸ èï6èC5¸ P¸ P¸; P¸ è˜6¡ :èÔ6è(5¸ P¸	 P¸: P¸ è}6¡:è¥6¸ P¸ Y‘+È}éc A£jQ¸ P¡j¹% ÷á—Ç'9èŒDè;FP¸ èåMèëMèLè§MY‘+ÁP¡jèL@¡j¹% ÷á—èîWÇ'9èZD¸  è®[èú[è¤BYItÿjé¡ÿé  ‹å]ÃU‹ìUé  ¸ è<5¹ è.Bè_þ¸ P¸ P¸P P¸ èÕ5¸  è6¸ è÷5¸( P¸ èÜ?è‡Wè‰[<Press Any Key>è;Bèº?uéøÿ¿JèEW¿ÈèeYè"Bé  ‹å]ÃU‹ìUé  ¹ è½Aè¾¹ è´Aè €¸ P¿:è¡CèPEP¸ èúLè Mè¤Kè¼LY‘+ÁP¸ èa?¸ èl5èW¿:èsC¸  èÇZè[è½A¸ ¢;é  ‹å]ÃU‹ìUé  ¹ èRAè…ÿ¹ èIAè³–¸ ¢;é  ‹å]ÃU‹ìUé  ¸ P¸ P¸P P¸ èÜ4¸  è5èl3¹ èAèè¹ èAè<Œé  ‹å]ÃU‹ìUé  ¹ èñ@è$ÿ¹ èè@è"‚¹ èß@è”ƒé  ‹å]ÃU‹ìUé  ¸ P¸ P¸P P¸ èx4¸  è´4¸( P¸ è…>è‚3¹ è£@èz¹ èš@èÎ‹é  ‹å]ÃU‹ìUé  ¹ èƒ@è«ÿ¸ èx4¡ó: P¡b- ¹ ÷éYÁP¸ P¡ó:P¡b- ¹ ÷éYÁ P¸ è 4¸ P¸ Y‘+È}éy A£jQ¸ è4¡b¹" ÷á—‹……8 P¸ èë=è–U¸* P¸  èÑXèS@¸üèÇ5¸d è82èå5¸ è×3¡b¹" ÷á—‹……8 P¸ è¯=èZU¸* P¸  è•Xè@YItÿjé‹ÿ¸ èŸ3¡b¹" ÷á—‹……8 P¸ èw=è"U¸* P¸  è]Xèß?¡b¹" ÷á—W¡b¹" ÷á—‹……8 _‰……8é  ‹å]ÃU‹ìUé  ¹ è[?èþ¹ èR?è‚èÓT~aè@A¸  è”XèàXèŠ?è½T~Bè*A¸  è~X~#èA¸  èqXèj?èT~è
+A¸  è^XèªXèT?é  ‹å]Â| U‹ìUé  ¡h; £h;¡h;= é ¸ £h;¸ P¸ Y‘+È}éF A£jQ¡j¹% ÷á—Ç'9W¡h;Ñà—‹…F;¹¹ ÷á—¡j¹% ÷áøÇ´èŽ@±$è¸@YItÿjé¾ÿ¿:Wè@COMMUNITY CHEST±è@¹ è`>èü¡h;Ñà—‹…F;= |= ~éô ¹ è@>èhý¡h;Ñà—‹…F;= té	 ¸ £19é\ = té	 ¸
+ £19éK = té	 ¸- £19é: = té	 ¸È £19é) = t= t= té	 ¸d £19é = té ¸ £19¡b£59¹ èº=èž„¡19P¸  P¿y;±
+èç;¹‚ è =è±?COMMUNITY CHEST±èô?è™?You received $±èÝ?¿y;èe?±èÑ?¸. Šà°P±èÄ?èíýéÑ=	 |= ~é¹ è?=ègü¡h;Ñà—‹…F;=	 té	 ¸2 £19é =
+ té	 ¸– £19é = té ¸d £19¡b£39¹ èö<è¼Œ¡b¹" ÷á—Š…‰82äÀué! ¸  £r;¡b£t;¹ èË<èüø¹ èÂ<è¡Õé; î:2äÀué ¹ èª<ènû¹ è¡<èÃÌé_ÿ¡19P¸  P¿y;±
+èË:¹‚ è„<è•>COMMUNITY CHEST±èØ>è}>
+You paid $±èÅ>¿y;èM>±è¹>¸. Šà°P±è¬>èÕüé¹= téq¹ è,<èTû¸ P¡!9Y‘+È}éñ A£p;Q¡p;¹" ÷á—Š…‰82ä4uéË ¡p;;bué¿ ¸2 £19¡b£59¡p;£39¹ èÚ;è ‹¡p;¹" ÷á—Š…‰82äÀué' ¡b£r;¡p;£t;¹ è¯;èà÷¹ è¦;è…Ô¹ è;èÎ÷ î:2äÀué ¹ èˆ;èLú¹ è;è¡Ë¹ èv;è§÷érÿ¡p;¹" ÷á—‹…•8=  é	 ¹ èU;è†÷¡p;¹" ÷á—Š…‰82ä4ué	 ¹ è6;è‚YItÿp;éÿ¹‚ è";è3=COMMUNITY CHEST   Collected±èj=è=$50 from each for the ±èK=èð<Opera.±è<=èá< ±è3=è\ûé@= té{¸  £ ;¸ P¸( Y‘+È}é‹ A£jQ¡j¹ ÷á—Ç:WÄ~ø&‹;b¸ tHPÄ~ø&‹E=  ¸ HY#ÁÀué> Ä~ø&‹E= |= ~é ¡ ;PÄ~ø&‹E¹( ÷éYÁ£ ;é = té	 ¡ ;s £ ;ƒÄYItÿjéyÿ¹ è:èÖø¡ ;P¸  P¿y;±
+è?8¹‚ èø9è	<COMMUNITY CHEST±èL<èñ;Your assessments are $±è-<¿y;èµ;±è!<¸. Šà°P±è<è=ú¡ ;£19¡b£39¹ è“9èY‰¡b¹" ÷á—Š…‰82äÀué ¸  £r;¡b£t;¹ èh9èGÒéá  î:2äÀué ¹ èP9èø¹ èG9èiÉé)ÿé½ = té5 ¸) P¡b¹" ÷á—X+…€8£h¡h=  |é	 ¡h( £h¹ è9è¥÷é€ = té ¹ èó8èò÷él = téd ¹ èß8èLø¹‚ èÖ8èç:COMMUNITY CHEST±è*;èÏ:You won a Get Out of Jail±è;è­: Card.±èù:èž: ±èð:èùé  ‹å]ÃU‹ìUé  ¡j; £j;¡j;= é ¸ £j;¸ P¸ Y‘+È}éF A£jQ¡j¹% ÷á—Ç'9W¡j;Ñà—‹…&;¹¹ ÷á—¡j¹% ÷áøÇ—¿è:±$è8:YItÿjé¾ÿ¿:Wè:CHANCE±è:¹ èé7è¥õ¡j;Ñà—‹…&;= t= té ¹ èÉ7èñö¡j;Ñà—‹…&;= té	 ¸2 £19é = té ¸– £19¡b£59¹ è‘7èu~¡19P¸  P¿y;±
+è¾5¹‚ èw7èˆ9CHANCE±èÔ9èy9You received $±è½9¿y;èE9±è±9¸. Šà°P±è¤9èÍ÷éV= téÎ ¹ è$7èLö¸ £19¡b£39¹ è7èÕ†¡b¹" ÷á—Š…‰82äÀué! ¸  £r;¡b£t;¹ èä6èó¹ èÛ6èºÏéù î:2äÀué ¹ èÃ6è‡õ¹ èº6èÜÆé“ÿ¡19P¸  P¿y;±
+èä4¹‚ è6è®8CHANCE±èú8èŸ8
+You paid $±èç8¿y;èo8±èÛ8¸. Šà°P±èÎ8è÷öé€= |= ~éÇ ¡j;Ñà—‹…&;= té ¸) P¡b¹" ÷á—X+…€8£hé} = té ¸ P¡b¹" ÷á—X+…€8£hé] = té ¸( P¡b¹" ÷á—X+…€8£hé= = té ¸ P¡b¹" ÷á—X+…€8£hé = té ¸ P¡b¹" ÷á—X+…€8£h¡h=  |é	 ¡h( £h¹ èŽ5è,ôé¬=	 téO ¡b¹" ÷á—‹…€8= té	 ¸ £hé = té	 ¸ £hé =% té ¸ £h¸ ¢ê:¹ è75èÕóéU=
+ t= téÕ ¡b¹" ÷á—‹…€8=% |=( ~é ¸. P¡b¹" ÷á—X+…€8£hé‘ = |= ~é ¸ P¡b¹" ÷á—X+…€8£hél = |= ~é ¸ P¡b¹" ÷á—X+…€8£héG = |= ~é ¸ P¡b¹" ÷á—X+…€8£hé" = |=# ~é ¸$ P¡b¹" ÷á—X+…€8£h¸ ¢;¹ èU4èóòés= té‰¸  £ ;¸ P¸( Y‘+È}é‹ A£jQ¡j¹ ÷á—Ç:WÄ~ø&‹;b¸ tHPÄ~ø&‹E=  ¸ HY#ÁÀué> Ä~ø&‹E= |= ~é ¡ ;PÄ~ø&‹E¹ ÷éYÁ£ ;é = té	 ¡ ;d £ ;ƒÄYItÿjéyÿ¹ è 3èdò¡ ;P¸  P¿y;±
+èÍ1¹‚ è†3è—5CHANCE±èã5èˆ5Your repairs were $±èÇ5¿y;èO5±è»5¸. Šà°P±è®5è×ó¡ ;£19¡b£39¹ è-3èó‚¡b¹" ÷á—Š…‰82äÀué! ¸  £r;¡b£t;¹ è3è3ï¹ èù2èØËé î:2äÀué ¹ èá2è¥ñ¹ èØ2èúÂé,ÿ¡19P¸  P¿y;±
+è1éâ= téj¹ è°2èØñ¸ P¡!9Y‘+È}éç A£p;Q¡p;¹" ÷á—Š…‰82ä4uéÁ ¡b¹" ÷á—Š…‰82äÀué é¡p;;buéœ ¸2 £19¡p;£59¡b£39¡b¹" ÷á—Š…‰82ä4ué	 ¹ è/2èõ¡b¹" ÷á—Š…‰82äÀué ¡p;£r;¡b£t;¹ è2èãÊ î:2äÀué ¹ èï1è³ð¹ èæ1èÂé^ÿ¡b¹" ÷á—Š…‰82ä4ué	 ¹ èÄ1è¨xYItÿp;éÿ¹‚ è°1èÁ3CHANCE   You paid each player±èö3è›3$50 as Chairman of the Board.±èÐ3èu3 ±èÇ3èl3 ±è¾3èçñép= téñ ¹ è>1èqï¹ è51èor¸èP¸Ä	Y‘+È}é& A£jQ¡jP¸ èq<èw<è;è3<èÒ&YItÿjéÞÿ¸Ä	P¸èY‘+È~é& I£jQ¡jP¸ è;<èA<èå:èý;èœ&YAtÿjéÞÿ¹ èÀ0è†n¹ è·0¿—7W¡pP¡rPèœN¡b¹" ÷á—W¡b¹" ÷á—‹…€8- _‰…€8¹ è‚0èKp¹ èy0¡b¹ ÷á—ÇÇ7W¡pP¡rPèTN¹ èY0èHréw = té ¹ èE0èDïéc = té[ ¹ è10èžï¹‚ è(0è92CHANCE±è…2è*2You won a Get Out of Jail±èc2è2 Card.±èT2èù1 ±èK2ètðé Xéùÿ‹å]ÃU‹ìUé  ¹
+ èÄ/¡b¹" ÷á—Ç€8Wèºƒ¹ è¬/èùˆ¹ è£/è×z¹ èš/èq|¹ è‘/¸ º èmÈé  ‹å]ÃU‹ìUé  ¹ èt/è¨z¹ èk/èB|¹ èb/èr¡b¹" ÷á—Š…„82äÀué] èÍDèÏHYOU ARE IN JAIL!èÓHè}/¡9=  é, è¥Dè§HYou lose your double roll turn.èœHèF/¸  £9éC èpDèrHYou are on ¡b¹" ÷á—‹…€8¹* ÷á—ÇáBèº0¸  èH¸. P¸  è{GèPHèú.é  ‹å]ÃU‹ìUé  ¡b¹" ÷á—‹…€8= t=' té1¹ è{.è¯y¹ èr.èI{¹ èi.èq¡b¹" ÷á—‹…€8= téf¸  £ ;¸ P¸( Y‘+È}é† A£jQ¡j¹ ÷á—‹…:;bté` ¡ ;P¡j¹ ÷á—X.…ÌI£ ;¡j¹* ÷á—.Š…øB2ä=  té2 ¡ ;P¡j¹ ÷á—‹… :P¡j¹* ÷á—.‹…ùB¹# ÷á—X.÷­©AYÁ£ ;YItÿjé~ÿ¡ ;P¡b¹" ÷á—X…‚8£ ;¡ ;P¸
+ èô8èú8èž7è¶8£ ;èCèG
+INCOME TAXèGèÄ-è÷BèGè»-¸ P¸ è9+èäBèæFDo you choose to payèæFè-èÃBèÅF   a è-¸
+ è!è®B¸F P¸  èéEèk-¸ èþ è˜BèšFlat rate of $200?èFèG-èzBè|F  or è8-¸
+ èË èeB¸C P¸  è Eè"-¸ èµ èOBèQFalculated 10% tax?èSFèý,¿JèB¿Èè/Dèì, È2äè0 Pèº1¸F èÆ1¸C èÀ1è2uéÿ È2äè ¢Ç¹ èj,èoèëAèíE
+INCOME TAXè÷Eè¡, Ç2ä=F téç ¸È £19¡19; ;éb èµAè·EToo bad.  Calculating your taxè­EèW,èŠAèŒEwould have been only $¡ ;P¸  èÇD¸. P¸  è¡DèvEè ,¡19; ;|éd èGAèIE!Smart move.  Calculating your taxè<Eèæ+èAèEwould have cost you $¡ ;P¸  èWD¸. P¸  è1DèEè°+éÍ =C téÅ ¡ ;£19¡19=È éO èÇ@èÉDBad choice.  This isèÉDès+è¦@è¨Dcosting you $¡ ;P¸  èìC¸. P¸  èÆCè›DèE+¡19=È |éZ èm@èoDWise choice.  The totalèlDè+èI@èKDcalculation is only $¡ ;P¸  è‡C¸. P¸  èaCè6Dèà*¡ ;=È téA è@è
+DEither way turns outè
+Dè´*èç?èéCto be exactly $200.èêCè”*¡b£39¹ è7*èýy¡39¹" ÷á—Š…‰82äÀué ¸  £r;¡b£t;¹ è*èëÂéÐ  î:2äÀué ¹ èô)èºé~ýé˜ =' té ¹ èÝ)èlè^?è`C
+LUXURY TAXèjCè*èG?èICPay $75.èUCèÿ)¸K £19¡b£39¹ èœ)èby¡39¹" ÷á—Š…‰82äÀué ¸  £r;¡b£t;¹ èq)èPÂé5  î:2äÀué ¹ èY)è{¹épÿé = té ¹ èB)è÷k¹ è9)èµùé  ‹å]ÃU‹ìUé  ¸ è*¸ P¸ P¸P P¸ èÌ¸  èè\¹ è)è5t¹ èø(èÏu¸ P¸ P¸* P¸ èŸ¸ èÛè/¸ P¸ P¸) P¸ è„¸ èÀè¸ è£¹ è³(è®‡¸ P¸ P¸) P¸ èZ¸ P¸ èm&é  ‹å]ÃU‹ìUé  ¹ è€(èNÿè>èBYOU MUST PAY BACK BANK LOANèüAè¦(èÙ=èÛAOF $¡b¹" ÷á—‹…•8P¸  èAè¿A BEFORE YOU PROCEED.è¿Aèi(èœ=è¶Aè`(è“=è•A        <Press Any Key>è’Aè<(è»%uéøÿ¡b¹" ÷á—‹…•8£n;¸ ¢x;¡b¹" ÷á—‹…‚8P¡b¹" ÷á—X;…•8é é é	 ¹ è 'èÂ·¡b¹" ÷á—‹…•8£19¡b£39¹ è'èGw¡b¹" ÷á—Š…‰82äÀué ¸  £r;¡b£t;¹ èV'è5ÀéË  î:2äÀué é»þ¹ è;'è	þè¼<è¾@You have repaid the bank loanèµ@è_'è’<è”@of $¡b¹" ÷á—‹…•8P¸  è×?èx@ and now may proceed.èw@è!'èT<èn@è'èK<èM@        <Press Any Key>èJ@èô&ès$uéøÿ¸  ¢x;¡b¹" ÷á—¸  ‰…•8é  ‹å]ÃU‹ìUé  ¸  ¢&;¸  ¢';¸ èO¸ P¸ è4$èß;èá?You are in JAIL.è’&¡b¹" ÷á—‹…‡8= té é4=  |= ~é'¸ P¸ èë#è–;è˜?Want to èQ&¸ èäè~;¸P P¸  è¹>è;&¸ èÎèh;èj?ay $50?è$&¸ P¸ è¢#èM;èO?     or è&¸ è›è5;¸R P¸  èp>èò%¸ è…è;è!?oll?èÞ%¡b¹" ÷á—‹……8=  éF ¸ P¸	 èG#èò:èô> or use è­%¸ è@èÚ:¸C P¸  è>è—%¸ è*èÄ:èÆ>ard?èƒ%¿Jè•:¿Èèµ<èr% È2äè¶Pè@*¸P èL*¸R èF*¸C è@*è+uéßþ¸  ¢; È2äèŠ=R téœ¸ P¸	 Y‘+È}é8 A£jQ¸ P¡jèŸ"èJ:èL>                    èù$YItÿjéÌÿ¹ è—$èIjèd"uéïÿ¿Jèï9¿Èè<èÌ$¹ èu$èj¸èè®¡9= té ¸ ¢;¡b¹" ÷á—¸  ‰…‡8¸ ¢';é ¡b¹" ÷á—W¡b¹" ÷á—‹…‡8 _‰…‡8¡b¹" ÷á—‹…‡8= téÂ ¸ èò¸ P¸ è×!è‚9è„=You have rolled 3è4$¸ P¸ è²!è]9è_=times and must pay.è$¸¸è¸,èòèŸ¸èèé¸ P¸ èv!è!9è#=                 èÓ#¸ P¸ èQ!èü8èþ<                   è¬#¸P ¢È¸ ¢';éWþé{=P té%¸2 £19¡b£39¡b¹" ÷á—‹…‚8=2 }é ¹ è#èpqéé ¹ è#¿ÉW¸  P¸  P¸z P¸z Pèè@¸2 £19¡b£39¹ èä"èn¹ èÛ"è²o¹ èÒ"è„eèS8èU<You must pay $50èY<è#è68è8<to get out of jail.è9<èã"¹ èŒ"èRr¡39¹" ÷á—Š…‰82äÀué ¸  £r;¡b£t;¹ èa"è@»¸  ¢';é> î:2äÀué ¹ èC"èe²éGÿ¹ è7"è8p¹ è."èz`¸ ¢;¸ ¢&;éN =C téF ¡b¹" ÷á—‹……8=  té é‘ûé ¡b¹" ÷á—W¡b¹" ÷á—‹……8- _‰……8¸ ¢;¸ ¢&; ;2äÀué« ¹ è¼!è…a¡p £p¹ èª!èäb¹ è¡!¡b¹ ÷á—ÇG8W¡pP¡rPè|?¡p- £p¹ èx!¡b¹ ÷á—ÇÇ7W¡pP¡rPèS?¹ èX!èGc¹ èO!¿ÉW¸  P¸  P¸z P¸z Pè)?¡b¹" ÷á—¸  ˆ…„8¡b¹" ÷á—¸  ‰…‡8é  ‹å]Ã¹ è
+!¸ º	 èæ¹¡9=  ¸ tHP ë:2ä4Y#ÁÀué	 ¡b £b¡b;!9é ¸ £b¡b¹" ÷á—Š…‰82äÀué é®ÿ¡b¹" ÷á—‹…•8=  é( ¹ è” èø¡b¹" ÷á—Š…‰82ä4ué ¸ ¢ë:éqÿ¹ èl èmn¸  ¢ë:¸  ¢x;¹ èW è£^¡b¹" ÷á—Š…„82äÀuép ¹ è8 è·ù¡b¹" ÷á—Š…‰82äÀué éÜ ';2äP &;2äY#ÁÀué ¹ è èkué6  &;2äÀué	 ¸ ¢ë:éåþ ';2äÀué	 ¹ èÔè>ué	 ¹ èÈèv¸  ¢;¹ è¹¿ÉW¸  P¸  P¸z P¸z Pè“=¡b¹" ÷á—‹…€8= ta= t\= tW=	 tR=
+ tM= tH= tC= t>= t9= t4= t/= t*= t%= t = t= t= t=  t=! t=# tëë+=& t&=( t!= t= t= t=$ t= t= té ¹ èûè'ïéu = t= t=" té ¹ èÝèàßéW = t= t=% té ¹ è¿èBæé9 = t= t=' té ¹ è¡èüïé = t= t= té	 ¹ èƒèÿî ;2äÀué é¬þ¡b¹" ÷á—Š…‰82ä4ué  v;2ä4ué	 ¹ èIè µ¸  ¢v;¡b¹" ÷á—Š…‰82äÀué{ ¸  £9¸  ¢ë:¹ èèl¹ èèØ]¡b¹" ÷á—Š…„82äÀué	 ¡p £p¹ èç¡b¹ ÷á—Ç8W¡pP¡rPèÂ;¹ èÇ¿ÉW¸  P¸  P¸z P¸z Pè¡;é«üé  3Àè\   { { UUUU•UYUU•UYUU•UYUU•UYUU•UYUUUTUUUU•UYUU•UYUU•UYUU•UYUU•UYUUUTUUUU•UYUU•UYUU•UYUU•UYUU•UYUUUTUUUU•UYUU•UYUU•UYUU•UYUU•UYUUUTUUUU•UYUU•UYUU•UYUU•UYUU•UYUUUTUUUU•UYUU•UYUU•UYUU•UYUU•UYUUUTUUUU•UYUU•UYUU•UYUU•UYUU•UYUUUTUU@ •UYUU•UYUU•UYUU•UYUU•UYUUUTUUA•UYUU•EYUU•UYUU•UYUU•UYUUUTUUA•UYUU•UYUUUU•UYP•UY @TUUA•UYUU•EYUU” E•UYQE•UYETUUA•UYUU•EYUU• YQE•UYQE•UYETUUA•UYUU”QYUU•TU•UYP•UYETUUA‘•Y•TE”UU” @TUU@ ‘•AY•UYAEAIUUAIUUUTUU@ ‘•UY•UYUU”UU”UUUTªªªª                      ªªª¨UUUQ?ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿðUUTUUUD?ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿðUUTUUUD?ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿðUUTUUUD?ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿðUUTUUUQ?ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿðUUTUUUD?ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿðUUTUUUD?ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿðUUTUUUD?ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿðUUTUUUQ?ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿðUUTªªªª?ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿòªªª¨UUUU?ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿñUUUTUUUU?ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿñTUUTUUU?ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿñQUTUUTQ?ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿðEEUTUUT?ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿðEUTUUT?ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿðEEUTUUTQ?ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿñQUTUUU?ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿñTUUTUUUU?ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿñUUUTªªªª?ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿòªªª¨UUUQ?ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿðUUTUUUD?ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿðUUTUUUD?ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿðUUTUUUD?ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿðUUTUUUQ?ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿðUUTUUUD?ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿðUUTUUUD?ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿðUUTUUUD?ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿðUUTUUUQ?ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿðUUTªªªª?ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿòªªª¨UUUQ?ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿñUUUTUUUD?ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿñUUUTUUUD?ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿñQUUTUUUD?ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿñEUUTUUUQ?ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿñUTUUUD?ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿñUUTUUUD?ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿñEUUTUUUD?ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿñUUUTUUUQ?ü                  ÿñUUUTªªªª?ü                  ÿòªªª¨UUUU?ü                  ÿñUUUTUUPA?ü                  ÿñUEUTUUP?ü          *€    * ÿñUUTUUT?ü  (
+
+ 
+
+
+ 
+ 
+ 
+  (ÿñPUTUUT?ü  (
+((
+
+((
+¨((€
+¨ÿñTUTUUP?ü  (Š((
+
+((
+
+((€((ÿñTUTUUPU?ü  *ª((
+
+((
+
+((€((ÿñ@UTUUQU?ü  *ª
+ (¨
+ (¨
+ €((ÿñAUTUUUU?ü  **          €  ÿñUUUTªªªª?ü  (
+          
+€  ÿòªªª¨UUUD?ü                  ÿðUUTUUUU?ü                  ÿñEUUTUUUD?ü                  ÿñEUUTUUUU?ü                  ÿðUUTUUUD?ü                  ÿðUUTUUUU?ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿñEUUTUUUD?ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿñEUUTUUUU?ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿðUUTUUUD?ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿðUUTªªªª?ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿòªªª¨UUUU?ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿñUUUTUUUU?ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿñUUUTUUUU?ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿñUUUTUU@?ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿñPUTUUE?ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿñQEUTUUE?ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿñQEUTUU@?ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿñPUTUUUU?ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿñUUUTUUUU?ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿñUUUTªªªª?ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿòªªª¨UUUD?ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿðUUTUUUU?ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿñEUUTUUUD?ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿñEUUTUUUU?ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿðUUTUUUD?ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿðUUTUUUU?ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿñEUUTUUUD?ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿñEUUTUUUU?ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿðUUTUUUD?ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿðUUTªªªª?ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿòªªª¨UUUD?ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿðUUTUUUU?ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿñEUUTUUUD?ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿñEUUTUUUU?ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿðUUTUUUD?ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿðUUTUUUU?ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿñEUUTUUUD?ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿñEUUTUUUU?ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿðUUTUUUD?ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿðUUTªªªª                      ªªª¨UUUU€ 	UU€    •UYUU‘UUUTUUUU•UYPU•UYUU•UXDD„DIUU„DI UTUUUU€ 	E€    UYT‘ UUTUUUU•UYQE•UYUU”YUU•UYU•UYUUTUUUU•UYTU•UYUU”YUU•UYP•UYUUTUUUU•UYTU•UYUU YUU•UYEU•UYUTUUUU•UYUU•UYUUUU•UYEU•UYUUUTUUUU•UYTU•UYUU•UYUU•UYUU•UYUUUTUUUU•UYUU•UYUU•UYUU•UYUU•UYUUUTUUUU•UYUU•UYUU•UYUU•UYUU•UYUUUTUUUU•UYUU•UYUU•UYUU•UYUU•UYUUUTUUUU•UYUU•UYUU•UYUU•UYUU•UYUUUTUUUU•UYUU•UYUU•UYUU•UYUU•UYUUUTUUUU•UYUU•UYUU•UYUU•UYUU•UYUUUTUUUU•UYUU•UYUU•UYUU•UYUU•UYUUUTUUUU•UYUU•UYUU•UYUU•UYUU•UYUUUTõÉ{Î—@øÛH»Â½pû‰µP™vÿëPâ¤?<‚&åŽOk…8ÏÐ¸Ñï‰'Æ«7ŒÇCÆ°·–e\ê{Î2~“ôä‚¿]3–0ž¡b/5`™Þ¥=!–C)/ {ÔQFðóZ£Í$ó+vØ§ îï¶“+ª€é«¤8ÒU­ðqëfc£±lN¦@<'´âÏPKÏP·Eí»®I’II§IœIeÞù3ó5€DNnƒù"~Âh!¢ÚIÛI,›kÁ‘
+€’
+€²jöô¢0	£0	TeÂB×³]ñ\);ª8zÏÑ÷r1€r1€       €                ! !           UUU@       @    @  @    @  @    @  @    @  @      @      @      @      @      @      @   UUUP@      @      @                                                                                       UUUP                                                        €                             
+ 
+        €       €       €                               e                                                                                                                                                                                           ÿ                                
+ 
+                               ŽÀÑærŒØ- ŽØùÑÞùÑß¬Ðès 
+ 
+         €                     ê 6                    
+ 
+         €                                              
+ 
+        €                €          %Ü ðô>  @>@l$ô 
+ 
+        €                €     Fò                      
+ 
+        €       €       €                               ¨¨¨cdefghi   ¨ˆ¨stuvwxy    ˆ ƒ„…†‡ˆ‰    ¨ “”•–—˜™AEA U { { UUUU•UYUU•UYUU•UYUU•UYUU•UYUUUTUUUU•UYUU•UYUU•UYUU•UYUU•UYUUUTUUUU•UYUU•UYUU•UYUU•UYUU•UYUUUTUUUU•UYUU•UYUU•UYUU•UYUU•UYUUUTUUUU•UYUU•UYUU•UYUU•UYUU•UYUUUTUUUU•UYUU•UYUU•UYUU•UYUU•UYUUUTUUUU•UYUU•UYUU•UYUU•UYUU•UYUUUTUU@ •UYUU•UYUU•UYUU•UYUU•UYUUUTUUA•UYUU•EYUU•UYUU•UYUU•UYUUUTUUA•UYUU•UYUUUU•UYP•UY @TUUA•UYUU•EYUU” E•UYQE•UYETUUA•UYUU•EYUU• YQE•UYQE•UYETUUA•UYUU”QYUU•TU•UYP•UYETUUA‘•Y•TE”UU” @TUU@ ‘•AY•UYAEAIUUAIUUUTUU@ ‘•UY•UYUU”UU”UUUTªªªª                      ªªª¨UUUQ?ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿðUUTUUUD?ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿðUUTUUUD?ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿðUUTUUUD?ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿðUUTUUUQ?ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿðUUTUUUD?ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿðUUTUUUD?ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿðUUTUUUD?ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿðUUTUUUQ?ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿðUUTªªªª?ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿòªªª¨UUUU?ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿñUUUTUUUU?ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿñUEUTUUU?ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿñUUTUUTQ?ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿñDTUTUUT?ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿñ@TUTUUT?ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿñDTUTUUTQ?ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿñUUTUUU?ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿñUEUTUUUU?ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿñUUUTªªªª?ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿòªªª¨UUUQ?ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿðUUTUUUD?ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿðUUTUUUD?ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿðUUTUUUD?ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿðUUTUUUQ?ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿðUUTUUUD?ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿðUUTUUUD?ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿðUUTUUUD?ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿðUUTUUUQ?ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿðUUTªªªª?ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿòªªª¨UUUQ?ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿñUUUTUUUD?ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿñUUUTUUUD?ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿñTUUTUUUD?ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿñQUUTUUUQ?ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿñEUTUUUD?ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿñDUUTUUUD?ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿñQUUTUUUD?ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿñUUUTUUUQ?ü                  ÿñUUUTªªªª?ü                  ÿòªªª¨UUUU?ü                  ÿñUUUTUUPA?ü                  ÿñUTUTUUP?ü          *€    * ÿñUPUTUUT?ü  (
+
+ 
+
+
+ 
+ 
+ 
+  (ÿñU UTUUT?ü  (
+((
+
+((
+¨((€
+¨ÿñUAUTUUP?ü  (Š((
+
+((
+
+((€((ÿñU@UTUUPU?ü  *ª((
+
+((
+
+((€((ÿñT UTUUQU?ü  *ª
+ (¨
+ (¨
+ €((ÿñTUTUUUU?ü  **          €  ÿñUUUTªªªª?ü  (
+          
+€  ÿòªªª¨UUUD?ü                  ÿðUUTUUUU?ü                  ÿñEUUTUUUD?ü                  ÿñEUUTUUUU?ü                  ÿðUUTUUUD?ü                  ÿðUUTUUUU?ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿñEUUTUUUD?ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿñEUUTUUUU?ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿðUUTUUUD?ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿðUUTªªªª?ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿòªªª¨UUUU?ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿñUUUTUUUU?ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿñUUUTUUUU?ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿñUUUTUU@?ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿñPUTUUE?ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿñQEUTUUE?ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿñQEUTUU@?ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿñPUTUUUU?ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿñUUUTUUUU?ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿñUUUTªªªª?ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿòªªª¨UUUD?ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿðUUTUUUU?ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿñEUUTUUUD?ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿñEUUTUUUU?ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿðUUTUUUD?ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿðUUTUUUU?ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿñEUUTUUUD?ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿñEUUTUUUU?ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿðUUTUUUD?ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿðUUTªªªª?ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿòªªª¨UUUD?ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿðUUTUUUU?ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿñEUUTUUUD?ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿñEUUTUUUU?ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿðUUTUUUD?ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿðUUTUUUU?ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿñEUUTUUUD?ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿñEUUTUUUU?ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿðUUTUUUD?ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿðUUTªªªª                      ªªª¨UUUU€ 	UU€    •UYUU‘UUUTUUUU•UYPU•UYUU•UXDD„DIUU„DI UTUUUU€ 	E€    UYT‘ UUTUUUU•UYQE•UYUU”YUU•UYU•UYUUTUUUU•UYTU•UYUU”YUU•UYP•UYUUTUUUU•UYTU•UYUU YUU•UYEU•UYUTUUUU•UYUU•UYUU 
+ 
+                 0                   end;{all color grou 
+ 
+         À                    {with}
+    end;{X loop} 
+ 
+         À       0            ShowColorGroup}
+
+Proced 
+ 
+        À                À   dow;HHUnits :=0;
+    Got 
+ 
+        À       0        À   Color Group');
+    Write 
+ 
+        À       À       À   ShowColorGroup(ToReturnHH ! !                                        ªªª€    €  €    €  €    €  €     €  €     €  €    €€  €    €  €    €  €    €  €     €  €     €  €   € ªªª€   €      €      €      €        €        €€  €    ‚       ‚       ˆ                         ªªª€                                        runc(Value[PropNumber].Cost/2)+
+    Trunc(0.1*Value[PropNumber].Cost/2)+Value[PropNumber].Cost;
+    If Ply[Nbr].Cash < Amount then begin
+    Str(amount,Phrase2);
+    Invalid('You can''t afford $' + Phrase2 + '.','','');
+    exit;
+      end;
+   TextColor(red);
+   GotoXY(1,9);ClrEol;
+   Writeln(Place[PropNumber].Name);
+   W ! !                                                        
+ªª¨              
+       
+       
+       €      €      €                               
+ªª¨                             €  ˆ     €  ˆ     €  ˆ        (        (        (            
+ªª¨                     'the property to mortgage?');
+  ShowProp(ToMortgage);
+  If PropInput =('')then exit;
+  Amount :=Trunc(Value[PropNumber].Cost/2);
+  TextColor(red);GotoXY(1,9);ClrEol;
+  Writeln(Place[PropNumber].Name);
+  Writeln('mortgaged for $',Amount,'.');
+  PayTo :=Nbr;
+  PayIn80;
+  Owner[PropNumber].Mort := True;
+  SetCardColor(PropNu ! !                    
+ªª¨                   (       (       (       (       (       (       ˆ       ˆ       ˆ       Šªª¨     ˆ       ˆ                                                             €  €     €  €     €  €     ªªª€                                                           to 8 do begin
+ThisOne :=false;
+With ColorGroup[x] do
+ If Owner[Members[1]].OwnNum=Nbr then begin
+  ColorGroupCheckNumber :=x;
+  CheckColorGroup;
+  If AllColorGroup then begin
+    ThisOne :=true;HHtotal :=0;
+    For Y :=1 to NumberIn do begin
+           Case CGWhich of
+           ToBuyHH   : If Owner[members[y]].Mort then ! !  ªªª            
+       
+       
+       
+       "       "       "       "       ‚       ‚       ‚ªªª     ‚       ˆ       ˆ       ˆ       ˆ                                           €  €     €  €     ªªª€                                                                            rite('     ');          TextBackground(ColorGroup[x].TBack);
+          Write('  ');
+          TextColor(LightCyan);
+            Write(Copy(ColorGroup[x].Name,1,1));
+            TextColor(ColorGroup[x].TText);
+            Write(Copy(ColorGroup[x].Name,2,Length(ColorGroup[x].Name)-1));
+           For y:=1 to (12-Length(ColorGro ! !                                     *ªª                           (        (        (        (        "        "        "        "         €    *ªª €        €       €      €      €      €      €      €      €      €     € €     €  €     ªªª€                                         CGWhich of
+    ToReturnHH:Invalid('You have no houses or','hotels to return.','');
+    ToBuyHH   :Invalid('You have no property to build',
+                       'on.  The entire color group',
+                       'must be owned and unmortgaged.');
+    end;
+    exit;
+    end;
+
+If Printed = 1 then begin
+               C ! !                                              ªªªª         €        €    ˆ        ‚       ‚       €€      €€      €*ªªª€   €    €   €    €   €    €   €    €   €    €        €        €       €       €       €       €        €        €        €    *ªªª€                                          'L':GroupInput :='LightPurple';
+     'C':GroupInput :='Cyan';
+     'D':GroupInput :='DarkPurple';
+     'O':GroupInput :='Orange';
+     'R':GroupInput :='Red';
+     'Y':GroupInput :='Yellow';
+     'G':GroupInput :='Green';
+     'B':GroupInput :='Blue';
+     'N':Begin
+         CGGroupNumber :=0;
+         exit;
+          ! !                                               ªªª¨       (       (        ˆ    €      €                 
+ªªª                                                           €       €      "       "       (       (            
+ªªª                                         roupNumber :=x;
+        For Y :=1 to NumberIn do begin
+        Case CGWhich of
+        ToBuyHH   : If Owner[members[y]].Mort then GroupFound :=false;
+        ToReturnHH: begin
+                  HHTotal := HHTotal + Owner[Members[y]].HH;
+                  If HHTotal = 0 then GroupFound :=false;
+                  end;
+          TTT   @›    TDTh¶¿É   DÂSÞùx9   TÉ{Î ü!   ¨¨¨   @›    ¨ˆ¨h¶¿É    ˆ ÂSÞùx9    ¨ É{Î ü!   üüü   @›    üÌüh¶¿É   0Ì0ÂSÞùx9   0ü0É{Î ü!      @›     h¶¿É   BBBÂSÞùx9   BBÉ{Î ü!éy,Í«Copyright (C) 1985 BORLAND Inc ±W <3                                        Color display 80x25eP ppO.Š'
+äùtC.ŠPèØXþÌuóøÃw ÿ,lÇ n .Æ” ¾  &‹.£•&‹D.£—ú&ÇÄ&ŒLûë"P3ÀŽØÇ  Û.£’X.ÿ.•.Æ”ÿ.ÿ.•è4 .ÿ’.€>”ÿuð.¡—ú&‰D.¡•&‰û.¡’À£ Ã‹Ã‹Èãè âûÃQ‹ âþYÃU´Í]: t  é¡ U¸ Š> ‹ .‹jþÎþÊÍ´‹ 2ÿÍ]ÃSQRUèA ´°Š> ŠîŠ .‹jþÎþÊ:îu2ÀÍ]ZY[ÃSQRUè ´ëÓP  ¢ XÃP   ¢ XÃ´2ÿÍÃSQRUèòÿ¸ Š> ‹Ê.ŠjþÊÍ]ZY[Ãèø. m<ÿuU´Í]Æ  Æ  Æ	 ÿ<·P³ ¾ot ¾w<t<r°³ÿ<t·(<t2À³ ¾s¢ ˆ .ˆ>j.‹£  .‹D£ U´Í: t  2äÍ]éXÿÃPSQRVWUœ†Ö .:6ks.:js´2ÿÍ]_^ZY[XÃé/è/ÿŠÂ* þÀ2äÃè!ÿŠÆ* þÀ2äÃ[<w.¢kX<Pw.¢jX.:ksþÈ¢ X.:jsþÈ¢ ÿã$¨t$€€& p Ã$±Òà€&  ÃU£ Ç
+   Ç   Ç Ç  	 2äÍ3Ûˆ  ´ÍþÇ´Í]ÃÆ	 ¸?ëÇÆ	 ëôÆ	 ¸èµÿ¸ ëF$Š&  €ä
+Ä¢  U2ÿŠ  ´Í]ÃUŠ  €ãï´€>	 t´:Är*Ä€Ëˆ  ·ŠØ´Í]ëÈU‹Ø´Í]Ã[¹€>	 t¹?=Ç w£ X;Áw£ X; s£ X; s£
+ ÿã[ZYS´Éx
+ ; wÒx ; wUÍ]Ã´£ _XZ[‰ è” ‰ èã’[W‰ èƒ ‰ èÒ‹Ø;Ú~;‹ÂÀ+Ã£ ‹ËAès ¡ À~ÂÂ+Ã+Ã£ ¡  ëÂÂ£ ¡  âÒÃ‹ÃÀ+Â£ ‹ÊAè8 ¡ À~ÃÃ+Â+Â£ ¡  ëÃÃ£ ¡  âÒÃ3É+ÃtxAÃIÃQR¡ ‹ ‹ èÿZYÃ‹Ø¸Ý4º ;Ós÷ó‹Øäa¨uæa°¶æCŠÃæBŠÇæBÃäa$üæaÃ‘[_ë)PQ±ÓèØYX% Ã;Úu;ÁÃÁÚëå&‹E&‹]PÃXÃ[S‰>& Œ( ‹Á » r3Û$øè¼ÿ‹È‹ÓÇ. " Œ0 Ä>" èÂÿt%è°ÿs‰>. Œ0 &Ä=ëéès t	+ÁÚ% ë6&Ä=ëTè` ‹ÇŒÃè‹ÿ£Š‰ŒQR‹È‹Ó‹ÄŒÓƒëè_ÿ3ÀèhÿZYwéo	3À3ÛSP&ÿu&ÿ5‹ÇŒÃèTÿ‹øŽÃ&&E&E&EÄ6. &‰<&DÃÄ6& &‰<&DÃ‘[_ë[S‹Á&‹&‹U » r3Û$øèîþ£* ‰, Ä>" ‹ÇŒÃèêþsW&‹&‹]èÞþs‹øŽÃëî‹ñŽÂÿ6, ÿ6* &‰&‰\&D&D&‰&‰U&‹E&‹]è< t&Ä=&‹E&‹]&‹&‹Uë&‰" ‰$ ‹ùŽÂ&‰&‰]‹È‹Ó¡* ‹, &‰E&‰]£2 ‰4 ÇŒÃ4 èKþèVþuQ¡Š‹ŒèJþt1‹ñŽÂ&‹&‹\&‹L&‹T&‰&‰]¡2 ‹4 è)þ&‰E&‰]3ÀÃ‰>ŠŒŒW3Àü¹ ó«_3ÀÃ3É3Ò3öÄ>" èþtè &Ä=ëó‹ÄŒÓƒëèÓý3À+Œrè ‹ÂÃ;ós‹óèÑý‹È‹ÓÃèÀÿ‹ÆÃ[¡Š&‰‹Œ&‰Uÿã[&Ä=‰>Š‰>" ŒŒŒ$ 3ÀÄ>" ¹ üó«ÿã€>’ °ÿu
+´Í° tþÈ% Â  ’Æ’ 
+Àu"2äÍ
+Àuˆ&’°
+äu°€>”u<ué|2äÂ XZPRURèûùX<uŠ ëh<
+uþÆ.:6kr[ë?<u
+: tOþÊëK<u´2ÿÍëER´	2ÿ¹ Š ÍZþÂ.:jr'Š þÆ.:6krþÎR¸Š> ‹ .‹jþÎþÊÍZ´2ÿÍ]€>”uLè&ÿtLè9ÿ<uLè1ÿXÃXZP´ëXZP´ë´è 2äÂ €ü=t€ü<t€ü>t2€ü€tGUÍ!]ÃVQ‹6z‹|ƒ< tFFâ÷Y^¸ ùÃYèÚÿr‰^ÃQV‹6z‹|9uÇ  FFâô^Yë¹‹6z‹|‹Ût	´>è¦ÿÇ  FFâíÃ3À£r¿@‰>z‰|3Àüó«ŽÀ&ÇŒ b
+&ŒŽ è£÷Æ” ¾&
+¿6¹ üó¥3À£’¢€£‚£„Æ~Æ6 ÃSlŸ=	E	M	ŸlÿÿÁ ÿÿ‚ ÿÿC ÿÿÄ ÿÿÅ ÿÿÁ         ÿÿÁ         ÏSQRWV2äPÿ:^_ZY[ÃSQRWVLÿ8ëîU‹ì‡^.ŠC
+ÀtèÑÿëó‡^]Ãèåÿ
+ Ã<ar<zw, ÃPŠÄè XPÐÈÐÈÐÈÐÈè X$'@'ëš
+ätù¸  xþÈÃèN^ŒÈ.D.D.D
+.; véDŒË.\ŽÛ.\.‹ +Ó.;Tr.‹T‹ú¸þÿê s‹Â ±Óà3ÒÓŽÒ‹à£t3À£Š‰Œ£" ‰$ WÄ>" ¹ üó«_.÷ uŒÈŽÀß+Ø´Jèùý.‹D£v.‹D£x.‹.‹LQVèXþ^Y¿@ùù‰>^.‹D£`øÀtÇZ  Æ\ ‰>j.‹D£lÀtÇf Æh ƒÆV3ÀŽÀ&¡  £Ž&¡ £&Ç  2&Œ ÷r t&Ç ð&Œ ÷r tÆ”Ç~Ð3À£ˆ¢–‹`¿Zè‹l¿fèÆú è¢öÃ´0è+ý
+ÀtÃº_ëºM´	èýºu´	èý´ è
+ýNot enough memory$Incorrect DOS version$
+Program aborted
+$P¿ZèÂ¿fè»3ÀŽÀ¡Ž&£  ¡&£ X÷r u´LèŸü´€èšüÿ6v¸=PŽxË[.‹Àt53Ò‹ÀtSØBëô‹Ë[‹óƒÆ‹;÷t+ÎñùNOýó¤JuãÇ  ƒÃÿã^.;uƒÆÿæPRV¿–2ÀŠàŠ
+ÀtGëõW
+ät€ü:t	€ü\tÆ\GFF.ŠˆFG
+Àuõ¸ =º–è ü‹Ø_^ZÆ r).‰¸ B2íŠÎŠò2ÒèåûYr´?Tè×ûr´>èÏûëŠ²ðVé¨[èRS¾¶ ¿–¹  üó¥ÃLÿ6Ã[YSŠÐŠñþÊþÎé‹õ‹ÐÒtè “[+àL‹üüª‘ó¤ÿã3Ò¿€ .Š2íG3Ûã.Š< t<	uGIëï‹÷ã.Š< t<	tGIëï‹Ç+ÆtCJuÒ“Ãˆæ‰>è[êYXSQ»¶ èòë#ˆæ‰>è[êZX¿ôEESP‘»¶ è÷YÄ>èWŠæ2ö“-¶ +ÈvG&Æ þÆ:òtâó‘»¶ ŠCG&ˆþÆ:òtâñ_&ˆ5Ã2Àë°¢ç‰>ð[òìîèG S3À»¶ 8t08çuèðr!Ä>ì&‰ë¿ôèr‹÷Ä>ìü¥¥¥3À8t“-µ Ä>ð&‰Ã¹@ ë¹ ¿¶ X‹ô6Š2ö;Êv‹ÊBF¿¶ üó¤Æ âÿà´,è>ú‰þ‰üÃ[ŒÚ‹÷_üó¤ŽÚÿã[ŒÚ‹÷+á‹üüó¤ŽÚÿã[Y_üóªÿã‘ŒÚ[_^ü;÷sñùNOýó¤ŽÚÿã[XUPWS‹÷ŽØü­P­‹Ø­‹È­‹Ð­‹è­P­‹ø­P­ŽÀ^XÃœWU‹ìÄ~
+ü«‹Ã«‹Á«‹Â«X«‹Æ«X«ŒØ«X«X«[ƒÄ]ÿã;ÁsÃ²ëv;Á|;ÂÃ²‘ëh‹Ä+Ár= r±ÓèŒÑÁ;ŒrÃ²ÿëI[XS€”LèVøtLèiø€&”<tÃ†ƒ†º ë#3À†€Ã€>€ uÃŠ€¶ë[XS²†¶Rè´ùZ¡†- ‡ˆÀuRRÿ6ˆÿ~Z€þsèú^C
+User Break ë0Æúÿwèú
+I/O ëè÷ù
+Run-time èéù error  ŠÂèúèÙù, PC= ¡ˆè÷ùèÊù
+Program aborted
+ °é¹ûÂ Ày÷ØÃPè [Ñè™÷ó’Ã‹þ‹üSQŠÇŠûŠÝŠé2ÉÐØÑÛÑÙXÈXØ¸ébÈ¸6Ø‰þ‰ü‹ÃÃÀy÷ØÆ-C2íº'è ºèè ºd è	 ²
+è ŠÈë2ÉþÁ+ÂsúÂþÅþÉuþÍt€Á0ˆCÃ3À€?$º
+ u²CPŠè0ùŠÈX€é0r%€ù
+r€úu€é€ù
+r€ùsR÷âZr2íÁsÎë	€út‹ÈÉÃŠ€ù-uCQèªÿYr	€ù-u÷ØøÃ= €u€ù-uÃùÃ[‹÷&Š2íA+á‹üüó¤ÿã^.Š2íA+á‹üüó¤ÿæZŠÁ‹Ü6Š2íÙC6Ä?‹ô:ÈvŠÈ6ˆAüó¤gÿâ[‹÷2í+áL‹ü6ˆGüó¤ÿã[2í‹ô6Š2ä+Á‹þøÀt'y‹ç6ŠAüó¤ë6ˆùñAýó¤G‹çÿãèE ¸ tHÀÃè9 ¸ uHÀÃè- ¸ sHÀÃè! ¸ vHÀÃè ¸ wHÀÃè	 ¸ rHÀÃ‹üƒÇ6Š2íG‹÷ñ6Š2öF‹ÞÚŠÁŠâ;Êv‡ÊÉtüó¦u:àZY‹ãQÿâ†‹ü6Š2ö‹÷Fò6ŠÑr&6ˆ2í+ù‹çAVüó¤‹þ^NO‹ÊAýó¤G‹çÿ&†²éýü†èƒ÷‹ÈXèrH‹ô6Š2ö‹üú+Ðvð;Ñvñ‹Ñýó¤ë3Ò‡÷6ˆ‹æÿ&†[‹ü6Š2äàDÿã†‹ü6Š2öG‹÷ò6Š2íF‹ÞÙ3À+Ñr@ÉtBüQWVó¦^_Yt@GJuñ3À‹ãÿ&†ˆ £[‰&
+ŒSÄ>WèÚý¸ P¡HèBÿÄ>
+èÇýèõþÄ>è¼ýÿ6¸ÿ è%ÿèàþŠ è×ýéWÿ£[SÄ>WèŠý¸ P¡Hèòþ¡
+äuÄ>èlýP¸ÿ èØþè“þ±ÿèŒýÃ[XþÈu†Äÿã‰†²é¹û‹ô6Š\2ÿ6‹@Šà°6‰@Ã[â‹ô6Š:Át2äð‹ü2íù‘Aýó¤G‹çÿã
+äu
+ÀtÃ²épû[Z‹÷ƒì ‹üQü
+ít2ÀªþÍuûŽÚó¤Y´ *å*át2ÀªþÌuûÿã[ƒì ‹ü¹ 3Àüó«ÿãèï 6Ã‘[XS*Èr2íAŠáèÛ ŠÌ6ÐàsC°âôÃ‹ôFF6‹| 6ŽD"ŠÕ2öò2íüó¤Â$ [ŠÕ2ö2í‹ôòñ‹üƒÇ ;÷tNOýó¤G‹çÿã¸ ë3Àè• ó§ŽÚt5 ÀÂ@ 3Àë¸ è} Hu‡þ­¯uâø¸ ë3ÀŽÚÀÂ@ è_ ­«âúŽÚÂ  èQ ­÷Ð#«âøŽÚÂ  èA ­#«âúŽÚÂ  ‹Ü6‹G"
+ät3Àëè 6"¸  t@ÀÂ" ŠØ2ÿ±ÓëƒÃÜŠÈ€á°ÒàÃ‹ôƒÆ‹üƒÇ$ŒÚ¹ üÃ;Ã¸  u;Ñu@ÀÃ;Ã¸ u;ÑuHÀÃÇ  €ëÇ   
+Ét3> 
+Àu‹Á‹Þ‹×Ã:Áv‘‡Þ‡×ˆ$*È€ù(rŠ$ëß‰> €&!€‰>"06#Ï €€Î€€ùrŠç‹Ú3Ò€éëð€ùrŠãŠßŠúŠÖ2ö€é
+Ét
+ÑêÑÛÐÜþÉuö $ö#€uåÞ×s^ÑÚÑÛÐÜþÀuTùÃ†å‡Þ‡×*åÞ×s€6!€öÔ÷Ó÷Ò€ÄƒÓ ƒÒ ±
+öuŠòŠ×ŠûŠÜ2ä,rþÉuêëöÆ€uÐäÑÓÑÒþÈuñ3À3Û3ÒÃ€æ26!Ã
+Éto
+ÀtqÁè£‰‰2ä3Û3Ò¿±GŠ-
+íuŠãŠßŠúŠÖ2öë¾ ÐÝs&ÑÚÑÛÐÜNuçþÉuÍ‘ŸöÆ€užÐÕÑÓÑÒ
+ÉtþÉ‘26!
+Àu3À3Û3ÒÃ
+Àtû*Áõè ¢¿±¾ ;u
+;u:&r*&õÐÕNu
+ˆ-þÉtO¾ ÐäÑÓÑÒsÊ*&øëÙÐäÑÓÑÒr;u
+;u:&õ‹‹‹ŸöÆ€u	žÐÕÑÓÑÒëþÁuùÃéYÿr€r[3À3Û3ÒÃ€s[ùÃ‰‹Ê3ÏöÕ€å€ˆ.!€Î€Ï €‰6‰>ÃWVQèÀýY^_ÃWVQè®ýY^_ÃWVQèŸþY^_ÃWVQèÿY^_ÃR3×ZyRÑÒZÃöÆ€tè tõÃ:Áu
+Àt
+;×u;Þu:åÃÀu3Û3ÒÃŠü‹ÐÒy÷Ú¸ 
+öu°ˆ†ÖÒxþÈÑâyú
+ÿx€æ3ÛÃ<¨sI‹È‹ó‹ú2ä3Û3Ò€é€v9€ùrŠç‹Úºÿÿ€éëï€ùrŠãŠßŠúŠÖ¶ÿ€é
+ÉtùÑÚÑÛÐÜþÉuõ#×#Þ"åÃ2ÀÃRSPè©ÿ‹È‹ó‹úX[Zé×ü[&ÿu&ÿu&ÿ5ÿã[.ÿw.ÿw.ÿ7ƒÃÿã[XYZ_&‰&‰M&‰Uÿã†Y^_X[ZèŸürRSPÿ&†²é{ö†Y^_X[Zè|üëã†Y^_X[ZèhýëÔ†Y^_X[Z
+ÉtèÏýëÁ²éEö‹Ü6€ t6€w€Ã‹Ü6€gÃ†Y^_X[Zè™þÿ6†¸ tHÀÃ†Y^_X[Zèþÿ6†¸ uHÀÃ†Y^_X[Zèeþÿ6†¸ sHÀÃ†Y^_X[ZèKþÿ6†¸ vHÀÃ†Y^_X[Zè1þÿ6†¸ wHÀÃ†Y^_X[Zèþÿ6†¸ rHÀÃ†X[Z‹È‹ó‹úé ÿ†X[ZèLþéîþ†X[Zèþéáþèöº€ ° öÇ€uÑáÑÓþÊþÈuñ2Ò€çXSQRÿàµÿë2í[XZZS’±*Êr"€ùwþÁŠü€Ì€Óès
+ít@xöÇ€t÷ØÃ3ÀÃ²’é	õè¬ýYRSPÿá†Y^_Xè›ýRSPWVQÿ&††X[Z‹È‹ó‹ú
+ÀtAöÆ€uC£‰‰€Á€Ðù€Á€ŠÁ,¢%¡‹‹èýèþüþÈRSPè´ú:%Y^_sÞWVQÿ&†²é‘ô†Y^_¸!»¢ÚºIèŒúë†X[Z<lr[¹ƒ!¾¢Ú¿IR€æèÙüZrèÉüWVQèzýY^_è³üöÆ€tè—üþÉèºüœrè–üþÉè¯ürþÁ€Î€èCú<lr	¿)¹ èÆr
+Àt€ö€éŒýX9Ÿ?×`C0’0gª?(2×n¶*ï8tÐ Ðzˆˆˆˆ~«ªªªª†X[Z
+ÀtöÆ€t²éÔóŠì±*Á˜P‘¹€û¾3ó¿5èÈú‹È‹ó‹ú¸ 3Û3ÒèÿûRSP¸ 3Ûº €è·ùY^_èû¿ß¹ è8þÀ¹Ò¾÷¿r1èšùYRSP‘èü¹€Ò¾÷¿r1èyúY^_è€ù<gs3À3Û3ÒéÖü}ŠØ‰}é¢‹.:}Žã8Žc~I’$I~ÍÌÌÌL«ªªª*†X[ZöÆ€œ€æ¹€Ò¾÷¿r1è¢ú<ˆsURSPþÀµÿèÖýY^_Pè¬û
+ÀtþÈ‘‡Þ‡×è
+ù¿|¹ è²YÑésQ¹û¾3ó¿5èêùYÁrt‹È‹ó‹ú¸ 3Û3ÒèLúé?üX²éÀòm.`1pF,þåt6|‰„!wS<ÿÃ.zÒ}[•|%¸FXc~üïýu€Ò÷r1†X[Z
+Àt¼3ÉöÆ€tA€æQ¹ 3ö3ÿèçúr‘‡Þ‡×èèùYAAQ¹~J¾Žé¿oèÍúsèð ë{¿Ž¹ QW.‹.‹u.‹}è°ú_YrƒÇâçƒïƒÇ£‰‰W.‹.‹u.‹}èiúRSP¡‹‹èù¹ 3ö3ÿè
+ø‹È‹ó‹úX[Zèkùè… _ƒÇ.‹.‹u.‹}èé÷YöÁtQ‹È‹ó‹ú¸!»¢ÚºIèÈ÷YöÁt€Î€é'ûçÏÌTöô¢0	jÁ‘
+€µžŠoD€‚,:Í€jÁ‘
+     €!¢ÚI}è¢‹.º}Žã8Žc~I’$I’~ÍÌÌÌL«ªªªª¿¾¹ RSPQW‹È‹ó‹úèUø_Yè Y^_éJø£‰‰.‹.‹].‹UQWëQW.‹.‹u.‹}è-÷‹‹6‹>èø_YƒÇâÚ¹ 3ö3ÿé÷Sƒúr!‹Áèyë²öE€tþÂ*Âs2À<	r°	þÀŠÐŠðRè™ ZŠÂþÀ
+öuÁyÆ& ë	<r°è[¾&öÅ€t°-èj Šé
+ötµ 
+íyèY ëèK þÍyù
+Òt°.èI þÅtè@ þÊuõþÊxè, ë÷
+öuÃ°Eè+ °+
+ÉyöÙ°-è °/þÀ€é
+sùè €Á:ŠÁëŠ
+ÀtFë°0ˆCÃ‹‹]‹U
+Àu¾&Ç00FFþ2uô¹  ÃŠî€æPR,€˜ºM ÷ê ŠÌZX€ùÙuþÁQöÙèvY<sèõþÉQ€Î€±„*È° t
+ÑêÑÛÑØþÉuö¾&Šî±Òí€Å0ˆ,€æRSPÑàÑÓÑÒÑàÑÓÑÒYÁYÙYÑÑàÑÓÑÒFþ2uÍYÃ2ä»&Ø€?5Æ rþÈxKþ€?:rÆ ëïÆ1ÆG þÁÃŠ€ù-uCQè Yr€ù-u	€= t€u€øÃ‹ó3À3Û3Ò3ÉÆ% Š€ùar€ùzw€é è¥ r&è6r2WVQRSPŠÁ2äè½÷Y^_è+õY^_öÅ@tþ%ë€ù.uöÅ@ùu€Í@Fëµ‹ÞÃ€ùEŠ%u;èE rïFŠ€ù+t€ù-u€Í FèE rÙPŠÁFè< rŠàÐàÐàÄÐàÁFŠÈXöÅ töÙè
+ ‰‰]‰Uë¬€ùÚ|€ù&
+QVWè _^YÃùÃŠ€ù0r	€ù:õr€é0ÃRSPˆ$
+ÉyöÙŠÙ€ãüŠûÐëß2ÿ¿".‹.‹].‹U€átèV þÉuù‹È‹ó‹úX[Zö$€ué<õé³õ     Ž   @›   ¼>¨ ¥Ôh¶¿ÉÃ¬Åëx-ÐÍÎÂSÞùx9?ë+¨­ÅøÉ{Î—@
+ÀuÃ€Î€QRSPÑêÑÛÐÜÑêÑÛÐÜYåYÙYÑYsÑÚÑÛÐÜþÀuùÃ€æÃ^_ZY[WVöÇ€u€Ï€° *Âr< s
+ÀtÑëÑÙþÈëô‹Á‹ÓÃ3À3ÒÃ¸ÿÿºÿÿÃ‹Ú‹ÈÂtº  öÇ€uÑáÑÓþÊëó€çXSQRÿà°¢8[èì_SŒÀŒÚ;Âuÿfv5W¾¶ }¹  üó¥_è‹s° »ÿÿ&‰€>8 t&ˆEEL&‰EÃ&ÇE  ÃÆ€"Ã2Àë°ë°¢8†ÿ6†&ŠE$t&€eßÃ&‰Mè€>€ uñè–€>€ uç÷r t¸ D&‹èàå÷Â€ t&ÇE €>8s&ÆE€&‹]&‰]&‰]
+ÃtY¸B&‹3É3Òè¬å&‹Mù€ r¹€ +ÁƒÚ sÁ‹È3À3ÒQ‹Ê‹Ð¸ B&‹è‚åèZ÷Ú&‹u&€<tFBuöë¸B&‹¹ÿÿè`å&ÆE@&‹E&‰E&E&‰E
+Ã†ÿ6†&€}€uï&‹U&+U
+t¸B&‹¹ÿÿè$å´@&‹3Éèåë¸†ÿ6†&€}@ué!Ã†ÿ6†&ŠE$u&èáÿ&ÆE &‹ƒûvƒûÿt&Çÿÿ´>èÔäsÆ€ÿÃ¹	 »¿$QS¾¶ ¹ Šèæ.:t	[YƒÃâçùÃFCâéYY€<:uó.Š.‹_ÃCONÁÿÿTRMÁÿÿKBD‚ÿÿLSTCÿÿAUXÄÿÿUSRÅÿÿINP   OUT  ERR  &ƒ=ÿu-¸=²ö8t´<3É²ñRUèCäZr&‰Ãˆ€<uÆ€óÃ†Ç2ZŒ4ÿ&††‰>2Œ4&öE€uÆ€ÿ&††Ç2fŒ4ÿ&††‰>2Œ4&öE@uÆ€ÿ&†°ÿë2À†Ç2ZŒ4€&\ßWPè X
+Àtèëä_ÿ&†2öŠ.€ý~rµ~Æ~»6 ‰‚2Éè£ä²<t9<t5<tCþÊ<t+<t'<t5<tC<tE< rÕ:ÍtÑŠ'ˆþÁC€ü sˆ'èC ë¾þÉx¸èiä  KþÊuðë¬Š< r¦è& þÁCþÊuðëš
+öt–ë
+öuÆëèRäÇ
+CC‰„ÃŠ&”Æ” PèäXˆ&”ÃÄ>2€>€ uu&ŠE¨ uh$u&‹]&;]
+rè_ &‹]&ŠC&‰]ë?W<u‹‚;„r	Šðè
+ÿ‹‚ŠC‰‚ë<uLÿ8ë<uLÿ@ëLÿD_&ˆE&€M Ã&ŠEÃ°Ã´?&‹&‹M&‹Uè\âs3À&‹]Àu&Æ@&‰]Ø&‰]
+ÃW»¶ SèDÿ[<t"&€eß< vîˆCû5tSè)ÿ[< v&€eßëçÆ »¶ €? _Ãr€? tÆ€ùÃWèÿþ&€eß_[&ˆÿãøëù[Sœèšÿtè$êèÎÿrs&‰Ã&ˆÃÃ[Sè}ÿtW¿:è(ù‹÷_è¨ÿrü¥¥¥Ã[S3Û2íWSQè¤þY[<t<t&€eß_C&ˆââë_&ˆÃ[S2íWQèzþYü<t<t&€eß_ªâæÃ_° óªÃè[þ<t&€eß<
+t<uìèGþ<
+u&€eßÃÄ>2€>€ u?&ŠM€áu&‹]&ˆC&‰]&;]
+t%ÃP€ùt€ùt€ùtÿBÃÿ:Ãÿ<Ãÿ>Ã&‹M&+Mt´@&‹&‹U&‰UèÇàr;ÁtÆ€ðÃÀtè%â<v‘I° QèxÿYâ÷[XSéoÿ‘[XSQ»¶ èWèXèâë¶ +Ãv‘S° QèPÿYâ÷[‹Ë»¶ ŠSQè@ÿY[CâôÃ’[Y¿:EESQ»¶ èAöë¾[YS¿)Éu¿ )èµèè ÃTRUEFALSEè á‹ÜCC6*vŠÈ2íS° QèëþYâ÷[6Š2íCÉt6ŠSQèÕþY[CâóZ‹ãÿâ[.Š2íCã.ŠSQèºþY[Câóÿã°è®þ°
+é©þºëº ëºëº †ÿ6†&öE€t RèÄüZ:Ât<t< w
+öt&€eßëä3À@Ã3ÀÃ2Àéù2Àë°¢8†ÿ6†Qè8 Y€>€ uQè
+ûY€>€ u&‰MÃ†ÿ6†´@&‹3ÉéLßÂ †ÿ6†&ÇE  éLú†‰>2Œ4&ƒ} uÆ€ÿ&†Ç8?™ëÇ8@ð[^S€>€ uA‹×Ä>2Š&8&‹&‹MŽÞèëÞr!;Át#€>8?uÀt&‹M‹úøŽÆ+È3ÀüóªÃ 9¢€Ã3Ò†_ÿ6†&‹Mè¿ ‹Ê‹Ð¸ B&‹QRèžÞY[r;Áu;ÓtÆ€‘Ãè°÷ëÉ[S¸D&‹è{Þ
+À¸  u@ÀÃ[S¸B&‹3É3Òè`Þ&‹MëO[Sèæÿé­÷[S¸B&‹3É3Òè@ÞPR¸B&‹3É3Òè1ÞY[PR‹Ó¸ B&‹è"ÞZX&‹MIÁƒÒ ë´[SèÁÿéh÷ƒùt‹ñ3Û¹! ÑÓÞsÞùõÑÐÑÒâðÃ‹Ø‹Â÷á“÷áÓÃ‘[_SéMþ‘[_SéJþÇ8?™ëÇ8@ð†Z^_Pè> Y€>€ u
+;Át 9¢€ÿ&†Ç8?™ëÇ8@ð†‹Ï[XZ^_SQè	 _&‰ÿ&†&ƒ} tO&ƒ}tR&÷eZ‘Š&8&‹ŽÞèZÝs 9¢€3À&‹Mƒùt‹úø3Ò÷ñÒt€>8?uP+ÊŽÆ3ÀüóªX@ÃÆ€Ã†ÿ6†´AUèÝsÆ€Ã†è‹â_ÿ6†´VUW¿¶ èæÜ_rÖ¾¶ }¹  üó¥Ã†èZâÿ6†¡¶ 
+Àt(€ü:uèÞ,Ar«<s§´ŠÐè©Ü€>¸  t
+´;º¶ èšÜrÃ·9ë·:†èâÿ6†Šçëâ†Xÿ6†
+Àu´èoÜþÀŠÐ@¢¶ Ç· :\´G¾¹ èXÜsÆ ¾¶ 3ÛŠ
+Àt	FC&ˆþÉuñ&ˆÃ»|,ë3Û†ÿ6†÷r uBS¸ =UèÜZr0‹Ø¸ B3ÉèÜr$´?¹ÿÿº|-èüÛ´>èöÛ‹&tè“ÜÇ~Ðé" ²é¥÷Æ€!ÃèWÝ ô0´:$¹        ‹ìè4ßœ-éüU‹ìUé  ƒìM¸ è*Õ¸ P¸ P¸P P¸ èÌÕèbÔ¸ ˆF±~²WèäMONOGRAF.GRAèâû~²W¸€ èˆýè+â=  ué ¸  ˆF±~²WèßãMONOCODE.CHNè®û~²W¸€ èTýè÷á=  ué ¸  ˆF±~²Wè«ãMONOCODE.000èzû~²W¸€ è ýèÃá=  ué ¸  ˆF±ŠF±2ä4ué ¸ P¸ P¸P P¸ è	Õ¸  èEÕè™Ó¸ P¸ P¸A P¸ èîÔ¸ è*Õè~Ó¸ P¸	 P¸A P¸ èÓÔ¸ èûÔ¸ P¸ èàÞè‹öèú           -Monopoly Problem-è„úè.áèaöè{úè%áèXöèZúAll four files: MONOPOLY.COMèRúèüàè/öè1ú                MONOCODE.CHNè)úèÓàèöèú                MONOCODE.000è úèªàèÝõèßù                MONOGRAF.GRAè×ùèàè´õè¶ù*must all be on the logged drive and in theè ùèJàè}õèù(active directory.  Please rearrange yourèkùèàèHõèJù)disk, directory, or logged drive and thenè5ùèßßèõèùstart the game over again.èùè¸ß3ÀéÜé" ~²WèkáMONOCODE.CHNè:ù~²èüèŽßé  ‹å]Ã¹S è0ßèûüé  3ÀèÝÛ  

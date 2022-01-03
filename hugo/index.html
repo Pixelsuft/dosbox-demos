@@ -1,0 +1,693 @@
+<!doctype html>
+<html lang="en-us">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <link rel="shortcut icon" type="image/png" href="../icon256.png">
+  <title>Hugo</title>
+  <style>
+    * {
+      margin: 0px;
+      padding: 0px;
+      outline: none;
+      user-select: none;
+      -webkit-touch-callout: none;
+      -webkit-user-select: none;
+      -khtml-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      cursor: default;
+    }
+
+    body {
+      font-family: arial;
+      margin: 0px;
+      padding: 0px;
+      display: block;
+      overflow-x: hidden;
+    }
+
+    .emscripten {
+      padding-right: 0;
+      margin-left: auto;
+      margin-right: auto;
+      display: block;
+    }
+
+    div.emscripten {
+      text-align: center;
+    }
+
+    /* the canvas *must not* have any border or padding, or mouse coords will be wrong */
+    canvas.emscripten {
+      border: 0px none;
+    }
+
+    .spinner {
+      height: 30px;
+      width: 30px;
+      margin: 0;
+      margin-top: 20px;
+      margin-left: 20px;
+      display: inline-block;
+      vertical-align: top;
+
+      -webkit-animation: rotation .8s linear infinite;
+      -moz-animation: rotation .8s linear infinite;
+      -o-animation: rotation .8s linear infinite;
+      animation: rotation 0.8s linear infinite;
+
+      border-left: 5px solid rgb(235, 235, 235);
+      border-right: 5px solid rgb(235, 235, 235);
+      border-bottom: 5px solid rgb(235, 235, 235);
+      border-top: 5px solid rgb(120, 120, 120);
+
+      border-radius: 100%;
+      background-color: #0089ff;
+    }
+
+    @-webkit-keyframes rotation {
+      from {
+        -webkit-transform: rotate(0deg);
+      }
+
+      to {
+        -webkit-transform: rotate(360deg);
+      }
+    }
+
+    @-moz-keyframes rotation {
+      from {
+        -moz-transform: rotate(0deg);
+      }
+
+      to {
+        -moz-transform: rotate(360deg);
+      }
+    }
+
+    @-o-keyframes rotation {
+      from {
+        -o-transform: rotate(0deg);
+      }
+
+      to {
+        -o-transform: rotate(360deg);
+      }
+    }
+
+    @keyframes rotation {
+      from {
+        transform: rotate(0deg);
+      }
+
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    #status {
+      display: inline-block;
+      vertical-align: top;
+      margin-top: 30px;
+      margin-left: 20px;
+      font-weight: bold;
+      color: rgb(120, 120, 120);
+    }
+
+    #progress {
+      height: 20px;
+      width: 30px;
+    }
+
+    #controls {
+      display: inline-block;
+      float: right;
+      vertical-align: top;
+      margin-top: 30px;
+      margin-right: 20px;
+    }
+
+    #output {
+      width: 100%;
+      height: 200px;
+      margin: 0 auto;
+      margin-top: 10px;
+      display: block;
+      background-color: black;
+      color: rgb(0, 255, 0);
+      font-family: 'Lucida Console', Monaco, monospace;
+      outline: none;
+      display: none;
+      overflow-x: hidden;
+    }
+
+    svg {
+      transform: scale(0);
+    }
+
+    #homepage {
+      border: 1px solid #0089ff;
+      border-radius: 15px;
+      transition: 0.5s all;
+    }
+
+    #homepage:hover {
+      background-color: #0089ff;
+    }
+
+    #gofull {
+      border: 1px solid #0089ff;
+      border-radius: 15px;
+      transition: 0.5s all;
+      height: 40px;
+      width: 100px;
+    }
+
+    #gofull:hover {
+      background-color: #0089ff;
+    }
+  </style>
+  <link rel="shortcut icon" type="image/ico" href="/playdos/favicon.ico">
+</head>
+
+<body>
+  <img id="homepage" src="../homepage.png">
+
+  <div class="spinner" id='spinner'></div>
+  <div class="emscripten" id="status">Downloading...</div>
+
+  <span id='controls'>
+    <span><label><input type="checkbox" id="showLogs">Show Logs</label></span>
+    <span><label><input type="checkbox" id="resize">Don't resize canvas</label></span>
+    <span><label><input type="checkbox" id="pointerLock" checked>Lock/hide mouse pointer &nbsp;&nbsp;&nbsp;</label></span>
+    <span><input type="button" id="gofull" value="Fullscreen" onclick="Module.requestFullScreen(document.getElementById('pointerLock').checked,
+                                                                            document.getElementById('resize').checked)">
+    </span>
+  </span>
+
+  <div class="emscripten">
+    <progress value="0" max="100" id="progress" hidden=1></progress>
+  </div>
+
+
+  <div class="emscripten_border">
+    <canvas class="emscripten" id="canvas" oncontextmenu="event.preventDefault()"></canvas>
+  </div>
+  <textarea id="output" rows="8"></textarea>
+
+  <script type='text/javascript'>
+  </script>
+
+  <script type='text/javascript'>
+    document.addEventListener('contextmenu', function(e) {
+      e.preventDefault();
+    });
+    document.addEventListener('dragstart', function(e) {
+      e.preventDefault();
+    });
+    var statusElement = document.getElementById('status');
+    var progressElement = document.getElementById('progress');
+    var spinnerElement = document.getElementById('spinner');
+
+    var Module = {
+      preRun: [],
+      postRun: [],
+      print: (function() {
+        var element = document.getElementById('output');
+        if (element) element.value = ''; // clear browser cache
+        return function(text) {
+          if (arguments.length > 1) text = Array.prototype.slice.call(arguments).join(' ');
+          // These replacements are necessary if you render to raw HTML
+          //text = text.replace(/&/g, "&amp;");
+          //text = text.replace(/</g, "&lt;");
+          //text = text.replace(/>/g, "&gt;");
+          //text = text.replace('\n', '<br>', 'g');
+          //console.log(text);
+          if (text == 'Emulation aborted because stuck emulation timeout.') {
+            stuck_func();
+          } else if (element) {
+            element.value += text + "\n";
+            element.scrollTop = element.scrollHeight; // focus on bottom
+          }
+        };
+      })(),
+      printErr: function(text) {
+        if (arguments.length > 1) text = Array.prototype.slice.call(arguments).join(' ');
+        if (0) { // XXX disabled for safety typeof dump == 'function') {
+          dump(text + '\n'); // fast, straight to the real console
+        } else {
+          console.error(text);
+        }
+      },
+      canvas: (function() {
+        var canvas = document.getElementById('canvas');
+
+        // As a default initial behavior, pop up an alert when webgl context is lost. To make your
+        // application robust, you may want to override this behavior before shipping!
+        // See http://www.khronos.org/registry/webgl/specs/latest/1.0/#5.15.2
+        canvas.addEventListener("webglcontextlost", function(e) {
+          alert('WebGL context lost. You will need to reload the page.');
+          e.preventDefault();
+        }, false);
+
+        return canvas;
+      })(),
+      setStatus: function(text) {
+        if (!Module.setStatus.last) Module.setStatus.last = {
+          time: Date.now(),
+          text: ''
+        };
+        if (text === Module.setStatus.text) return;
+        var m = text.match(/([^(]+)\((\d+(\.\d+)?)\/(\d+)\)/);
+        var now = Date.now();
+        if (m && now - Date.now() < 30) return; // if this is a progress update, skip it if too soon
+        if (m) {
+          text = m[1];
+          progressElement.value = parseInt(m[2]) * 100;
+          progressElement.max = parseInt(m[4]) * 100;
+          progressElement.hidden = false;
+          spinnerElement.hidden = false;
+        } else {
+          progressElement.value = null;
+          progressElement.max = null;
+          progressElement.hidden = true;
+          if (!text) spinnerElement.style.display = 'none';
+        }
+        statusElement.innerHTML = text;
+      },
+      totalDependencies: 0,
+      monitorRunDependencies: function(left) {
+        this.totalDependencies = Math.max(this.totalDependencies, left);
+        Module.setStatus(left ? 'Preparing... (' + (this.totalDependencies - left) + '/' + this.totalDependencies + ')' : 'All downloads complete.');
+      }
+    };
+    Module.setStatus('Downloading...');
+    window.onerror = function(event) {
+      // TODO: do not warn on ok events like simulating an infinite loop or exitStatus
+      Module.setStatus('Exception thrown, see JavaScript console');
+      spinnerElement.style.display = 'none';
+      Module.setStatus = function(text) {
+        if (text) Module.printErr('[post-exception status] ' + text);
+      };
+    };
+  </script>
+  <script type="text/javascript">
+    var Module;
+    if (typeof Module === 'undefined') Module = eval('(function() { try { return Module || {} } catch(e) { return {} } })()');
+    if (!Module.expectedDataFileDownloads) {
+      Module.expectedDataFileDownloads = 0;
+      Module.finishedDataFileDownloads = 0;
+    }
+    Module.expectedDataFileDownloads++;
+    (function() {
+
+      var PACKAGE_PATH;
+      if (typeof window === 'object') {
+        PACKAGE_PATH = window['encodeURIComponent'](window.location.pathname.toString().substring(0, window.location.pathname.toString().lastIndexOf('/')) + '/');
+      } else if (typeof location !== 'undefined') {
+        // worker
+        PACKAGE_PATH = encodeURIComponent(location.pathname.toString().substring(0, location.pathname.toString().lastIndexOf('/')) + '/');
+      } else {
+        throw 'using preloaded data can only be done on a web page or in a web worker';
+      }
+      var PACKAGE_NAME = '/Users/ajf/Projects/2015/win95.ajf.me/em-dosbox/src/image.data';
+      var REMOTE_PACKAGE_BASE = 'hugo.data';
+      var USE_SPLITTER = !REMOTE_PACKAGE_BASE.toLowerCase().trim().endsWith('.data');
+      var CHUNK_SIZE = 1024 * 1024;
+      var CHUNKS_COUNT = 11;
+      if (typeof Module['locateFilePackage'] === 'function' && !Module['locateFile']) {
+        Module['locateFile'] = Module['locateFilePackage'];
+        Module.printErr('warning: you defined Module.locateFilePackage, that has been renamed to Module.locateFile (using your locateFilePackage for now)');
+      }
+      var REMOTE_PACKAGE_NAME = typeof Module['locateFile'] === 'function' ?
+        Module['locateFile'](REMOTE_PACKAGE_BASE) :
+        ((Module['filePackagePrefixURL'] || '') + REMOTE_PACKAGE_BASE);
+      var REMOTE_PACKAGE_SIZE = 1102577;
+      var PACKAGE_UUID = 'a57dbcd5-b296-4352-a8ea-167654cb497d';
+
+      function fetchRemotePackage_default(packageName, packageSize, callback, errback) {
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', packageName, true);
+        xhr.responseType = 'arraybuffer';
+        xhr.onload = function(event) {
+          var packageData = xhr.response;
+          callback(packageData);
+        };
+        xhr.send(null);
+        if (Module['setStatus']) Module['setStatus']('Downloading data...');
+      };
+
+      function fetchRemotePackage(packageName, packageSize, callback, errback) {
+        if (!USE_SPLITTER)
+          return fetchRemotePackage_default(packageName, packageSize, callback, errback);
+        if (Module['setStatus']) Module['setStatus']('Downloading data...');
+        var finished_ = 0;
+        var buf = new Uint8Array(packageSize);
+        for (var i = 0; i < CHUNKS_COUNT; i++) {
+          const i_ = i;
+          const xhr = new XMLHttpRequest();
+          xhr.open('GET', packageName + '/' + packageName + '-' + (i_ * CHUNK_SIZE) + '.data', true);
+          xhr.responseType = 'arraybuffer';
+          xhr.onload = function(event) {
+            finished_ += 1;
+            buf.set(new Uint8Array(xhr.response), i_ * CHUNK_SIZE);
+            if (finished_ >= CHUNKS_COUNT) {
+              callback(buf);
+            }
+          };
+          xhr.send(null);
+        }
+      };
+
+      function handleError(error) {
+        console.error('package error:', error);
+      };
+
+      var fetched = null,
+        fetchedCallback = null;
+      fetchRemotePackage(REMOTE_PACKAGE_NAME, REMOTE_PACKAGE_SIZE, function(data) {
+        if (fetchedCallback) {
+          fetchedCallback(data);
+          fetchedCallback = null;
+        } else {
+          fetched = data;
+        }
+      }, handleError);
+
+      function runWithFS() {
+
+        function assert(check, msg) {
+          if (!check) throw msg + new Error().stack;
+        }
+
+        function DataRequest(start, end, crunched, audio) {
+          this.start = start;
+          this.end = end;
+          this.crunched = crunched;
+          this.audio = audio;
+        }
+        DataRequest.prototype = {
+          requests: {},
+          open: function(mode, name) {
+            this.name = name;
+            this.requests[name] = this;
+            Module['addRunDependency']('fp ' + this.name);
+          },
+          send: function() {},
+          onload: function() {
+            var byteArray = this.byteArray.subarray(this.start, this.end);
+
+            this.finish(byteArray);
+
+          },
+          finish: function(byteArray) {
+            var that = this;
+            Module['FS_createPreloadedFile'](this.name, null, byteArray, true, true, function() {
+              Module['removeRunDependency']('fp ' + that.name);
+            }, function() {
+              if (that.audio) {
+                Module['removeRunDependency']('fp ' + that.name); // workaround for chromium bug 124926 (still no audio with this, but at least we don't hang)
+              } else {
+                Module.printErr('Preloading file ' + that.name + ' failed');
+              }
+            }, false, true); // canOwn this data in the filesystem, it is a slide into the heap that will never change
+            this.requests[this.name] = null;
+          },
+        };
+        new DataRequest(0, 582, 0, 0).open('GET', '/ARC.PIX');
+        new DataRequest(582, 1163, 0, 0).open('GET', '/ARM.PIX');
+        new DataRequest(1163, 1183, 0, 0).open('GET', '/autoexec.bat');
+        new DataRequest(1183, 17654, 0, 0).open('GET', '/BASEMENT.ART');
+        new DataRequest(17654, 25654, 0, 0).open('GET', '/BASEMENT.B');
+        new DataRequest(25654, 33654, 0, 0).open('GET', '/BASEMENT.O');
+        new DataRequest(33654, 41654, 0, 0).open('GET', '/BASEMENT.OB');
+        new DataRequest(41654, 41873, 0, 0).open('GET', '/BAT.PIX');
+        new DataRequest(41873, 51293, 0, 0).open('GET', '/BATCAVE.ART');
+        new DataRequest(51293, 59293, 0, 0).open('GET', '/BATCAVE.B');
+        new DataRequest(59293, 67293, 0, 0).open('GET', '/BATCAVE.O');
+        new DataRequest(67293, 75293, 0, 0).open('GET', '/BATCAVE.OB');
+        new DataRequest(75293, 85652, 0, 0).open('GET', '/BATHROOM.ART');
+        new DataRequest(85652, 93652, 0, 0).open('GET', '/BATHROOM.B');
+        new DataRequest(93652, 101652, 0, 0).open('GET', '/BATHROOM.O');
+        new DataRequest(101652, 109652, 0, 0).open('GET', '/BATHROOM.OB');
+        new DataRequest(109652, 115208, 0, 0).open('GET', '/BED1.ART');
+        new DataRequest(115208, 123208, 0, 0).open('GET', '/BED1.B');
+        new DataRequest(123208, 131208, 0, 0).open('GET', '/BED1.O');
+        new DataRequest(131208, 139208, 0, 0).open('GET', '/BED1.OB');
+        new DataRequest(139208, 140604, 0, 0).open('GET', '/BOAT.PIX');
+        new DataRequest(140604, 140764, 0, 0).open('GET', '/BUNG.PIX');
+        new DataRequest(140764, 148374, 0, 0).open('GET', '/BUTLER.PIX');
+        new DataRequest(148374, 149127, 0, 0).open('GET', '/CANDLE.PIX');
+        new DataRequest(149127, 149771, 0, 0).open('GET', '/CARPET.PIX');
+        new DataRequest(149771, 150053, 0, 0).open('GET', '/CHOP.PIX');
+        new DataRequest(150053, 160754, 0, 0).open('GET', '/DEADEND.ART');
+        new DataRequest(160754, 168754, 0, 0).open('GET', '/DEADEND.B');
+        new DataRequest(168754, 176754, 0, 0).open('GET', '/DEADEND.O');
+        new DataRequest(176754, 184754, 0, 0).open('GET', '/DEADEND.OB');
+        new DataRequest(184754, 196397, 0, 0).open('GET', '/DININGRM.ART');
+        new DataRequest(196397, 204397, 0, 0).open('GET', '/DININGRM.B');
+        new DataRequest(204397, 212397, 0, 0).open('GET', '/DININGRM.O');
+        new DataRequest(212397, 220397, 0, 0).open('GET', '/DININGRM.OB');
+        new DataRequest(220397, 227157, 0, 0).open('GET', '/DOG.PIX');
+        new DataRequest(227157, 229342, 0, 0).open('GET', '/DOOR.PIX');
+        new DataRequest(229342, 240956, 0, 0).open('GET', '/dosbox.conf');
+        new DataRequest(240956, 241132, 0, 0).open('GET', '/EYES.PIX');
+        new DataRequest(241132, 250740, 0, 0).open('GET', '/FUZYHERO.PIX');
+        new DataRequest(250740, 272132, 0, 0).open('GET', '/GARDEN.ART');
+        new DataRequest(272132, 280132, 0, 0).open('GET', '/GARDEN.B');
+        new DataRequest(280132, 288132, 0, 0).open('GET', '/GARDEN.O');
+        new DataRequest(288132, 296132, 0, 0).open('GET', '/GARDEN.OB');
+        new DataRequest(296132, 297923, 0, 0).open('GET', '/GLASDOOR.PIX');
+        new DataRequest(297923, 298478, 0, 0).open('GET', '/GOLD.PIX');
+        new DataRequest(298478, 302303, 0, 0).open('GET', '/GUARD.PIX');
+        new DataRequest(302303, 314152, 0, 0).open('GET', '/HALL.ART');
+        new DataRequest(314152, 322152, 0, 0).open('GET', '/HALL.B');
+        new DataRequest(322152, 330152, 0, 0).open('GET', '/HALL.O');
+        new DataRequest(330152, 338152, 0, 0).open('GET', '/HALL.OB');
+        new DataRequest(338152, 338695, 0, 0).open('GET', '/HDLSHERO.PIX');
+        new DataRequest(338695, 340436, 0, 0).open('GET', '/HELP.DAT');
+        new DataRequest(340436, 350745, 0, 0).open('GET', '/HERO.PIX');
+        new DataRequest(350745, 351725, 0, 0).open('GET', '/HERODEAD.PIX');
+        new DataRequest(351725, 464630, 0, 0).open('GET', '/HHH.EXE');
+        new DataRequest(464630, 479441, 0, 0).open('GET', '/HOUSE.ART');
+        new DataRequest(479441, 487441, 0, 0).open('GET', '/HOUSE.B');
+        new DataRequest(487441, 495441, 0, 0).open('GET', '/HOUSE.O');
+        new DataRequest(495441, 503441, 0, 0).open('GET', '/HOUSE.OB');
+        new DataRequest(503441, 715662, 0, 0).open('GET', '/HUGO.EXE');
+        new DataRequest(715662, 721830, 0, 0).open('GET', '/IGOR.PIX');
+        new DataRequest(721830, 728478, 0, 0).open('GET', '/JAIL.ART');
+        new DataRequest(728478, 736478, 0, 0).open('GET', '/JAIL.B');
+        new DataRequest(736478, 744478, 0, 0).open('GET', '/JAIL.O');
+        new DataRequest(744478, 752478, 0, 0).open('GET', '/JAIL.OB');
+        new DataRequest(752478, 752738, 0, 0).open('GET', '/KEY.PIX');
+        new DataRequest(752738, 762889, 0, 0).open('GET', '/KITCHEN.ART');
+        new DataRequest(762889, 770889, 0, 0).open('GET', '/KITCHEN.B');
+        new DataRequest(770889, 778889, 0, 0).open('GET', '/KITCHEN.O');
+        new DataRequest(778889, 786889, 0, 0).open('GET', '/KITCHEN.OB');
+        new DataRequest(786889, 798396, 0, 0).open('GET', '/LAB.ART');
+        new DataRequest(798396, 806396, 0, 0).open('GET', '/LAB.B');
+        new DataRequest(806396, 814396, 0, 0).open('GET', '/LAB.O');
+        new DataRequest(814396, 822396, 0, 0).open('GET', '/LAB.OB');
+        new DataRequest(822396, 833470, 0, 0).open('GET', '/LAKEROOM.ART');
+        new DataRequest(833470, 841470, 0, 0).open('GET', '/LAKEROOM.B');
+        new DataRequest(841470, 849470, 0, 0).open('GET', '/LAKEROOM.O');
+        new DataRequest(849470, 857470, 0, 0).open('GET', '/LAKEROOM.OB');
+        new DataRequest(857470, 857772, 0, 0).open('GET', '/LIPS.PIX');
+        new DataRequest(857772, 873460, 0, 0).open('GET', '/MANUAL.DOC');
+        new DataRequest(873460, 873690, 0, 0).open('GET', '/MASK.PIX');
+        new DataRequest(873690, 878824, 0, 0).open('GET', '/MDOOR.PIX');
+        new DataRequest(878824, 889068, 0, 0).open('GET', '/MONKEY.PIX');
+        new DataRequest(889068, 900407, 0, 0).open('GET', '/MUMMY.PIX');
+        new DataRequest(900407, 910362, 0, 0).open('GET', '/MUMMYRM.ART');
+        new DataRequest(910362, 918362, 0, 0).open('GET', '/MUMMYRM.B');
+        new DataRequest(918362, 926362, 0, 0).open('GET', '/MUMMYRM.O');
+        new DataRequest(926362, 934362, 0, 0).open('GET', '/MUMMYRM.OB');
+        new DataRequest(934362, 935074, 0, 0).open('GET', '/OLDMAN.PIX');
+        new DataRequest(935074, 942378, 0, 0).open('GET', '/PROF.PIX');
+        new DataRequest(942378, 942770, 0, 0).open('GET', '/PUMPKIN.PIX');
+        new DataRequest(942770, 955364, 0, 0).open('GET', '/README.DOC');
+        new DataRequest(955364, 955500, 0, 0).open('GET', '/REDEYES.PIX');
+        new DataRequest(955500, 956256, 0, 0).open('GET', '/ROPE.PIX');
+        new DataRequest(956256, 966560, 0, 0).open('GET', '/SCRIPT.FON');
+        new DataRequest(966560, 976869, 0, 0).open('GET', '/SPACHERO.PIX');
+        new DataRequest(976869, 983403, 0, 0).open('GET', '/STORERM.ART');
+        new DataRequest(983403, 991403, 0, 0).open('GET', '/STORERM.B');
+        new DataRequest(991403, 999403, 0, 0).open('GET', '/STORERM.O');
+        new DataRequest(999403, 1007403, 0, 0).open('GET', '/STORERM.OB');
+        new DataRequest(1007403, 1016925, 0, 0).open('GET', '/THE_END.ART');
+        new DataRequest(1016925, 1024925, 0, 0).open('GET', '/THE_END.B');
+        new DataRequest(1024925, 1032925, 0, 0).open('GET', '/THE_END.O');
+        new DataRequest(1032925, 1040925, 0, 0).open('GET', '/THE_END.OB');
+        new DataRequest(1040925, 1086861, 0, 0).open('GET', '/TMSRB.FON');
+        new DataRequest(1086861, 1088001, 0, 0).open('GET', '/TRAP.PIX');
+        new DataRequest(1088001, 1088468, 0, 0).open('GET', '/VENDOR.DOC');
+        new DataRequest(1088468, 1091174, 0, 0).open('GET', '/WDOORL.PIX');
+        new DataRequest(1091174, 1094066, 0, 0).open('GET', '/WDOORR.PIX');
+        new DataRequest(1094066, 1102577, 0, 0).open('GET', '/WHERO.PIX');
+
+        function processPackageData(arrayBuffer) {
+          Module.finishedDataFileDownloads++;
+          assert(arrayBuffer, 'Loading data file failed.');
+          var byteArray = new Uint8Array(arrayBuffer);
+          var curr;
+
+          // Reuse the bytearray from the XHR as the source for file reads.
+          DataRequest.prototype.byteArray = byteArray;
+          DataRequest.prototype.requests['/ARC.PIX'].onload();
+          DataRequest.prototype.requests['/ARM.PIX'].onload();
+          DataRequest.prototype.requests['/autoexec.bat'].onload();
+          DataRequest.prototype.requests['/BASEMENT.ART'].onload();
+          DataRequest.prototype.requests['/BASEMENT.B'].onload();
+          DataRequest.prototype.requests['/BASEMENT.O'].onload();
+          DataRequest.prototype.requests['/BASEMENT.OB'].onload();
+          DataRequest.prototype.requests['/BAT.PIX'].onload();
+          DataRequest.prototype.requests['/BATCAVE.ART'].onload();
+          DataRequest.prototype.requests['/BATCAVE.B'].onload();
+          DataRequest.prototype.requests['/BATCAVE.O'].onload();
+          DataRequest.prototype.requests['/BATCAVE.OB'].onload();
+          DataRequest.prototype.requests['/BATHROOM.ART'].onload();
+          DataRequest.prototype.requests['/BATHROOM.B'].onload();
+          DataRequest.prototype.requests['/BATHROOM.O'].onload();
+          DataRequest.prototype.requests['/BATHROOM.OB'].onload();
+          DataRequest.prototype.requests['/BED1.ART'].onload();
+          DataRequest.prototype.requests['/BED1.B'].onload();
+          DataRequest.prototype.requests['/BED1.O'].onload();
+          DataRequest.prototype.requests['/BED1.OB'].onload();
+          DataRequest.prototype.requests['/BOAT.PIX'].onload();
+          DataRequest.prototype.requests['/BUNG.PIX'].onload();
+          DataRequest.prototype.requests['/BUTLER.PIX'].onload();
+          DataRequest.prototype.requests['/CANDLE.PIX'].onload();
+          DataRequest.prototype.requests['/CARPET.PIX'].onload();
+          DataRequest.prototype.requests['/CHOP.PIX'].onload();
+          DataRequest.prototype.requests['/DEADEND.ART'].onload();
+          DataRequest.prototype.requests['/DEADEND.B'].onload();
+          DataRequest.prototype.requests['/DEADEND.O'].onload();
+          DataRequest.prototype.requests['/DEADEND.OB'].onload();
+          DataRequest.prototype.requests['/DININGRM.ART'].onload();
+          DataRequest.prototype.requests['/DININGRM.B'].onload();
+          DataRequest.prototype.requests['/DININGRM.O'].onload();
+          DataRequest.prototype.requests['/DININGRM.OB'].onload();
+          DataRequest.prototype.requests['/DOG.PIX'].onload();
+          DataRequest.prototype.requests['/DOOR.PIX'].onload();
+          DataRequest.prototype.requests['/dosbox.conf'].onload();
+          DataRequest.prototype.requests['/EYES.PIX'].onload();
+          DataRequest.prototype.requests['/FUZYHERO.PIX'].onload();
+          DataRequest.prototype.requests['/GARDEN.ART'].onload();
+          DataRequest.prototype.requests['/GARDEN.B'].onload();
+          DataRequest.prototype.requests['/GARDEN.O'].onload();
+          DataRequest.prototype.requests['/GARDEN.OB'].onload();
+          DataRequest.prototype.requests['/GLASDOOR.PIX'].onload();
+          DataRequest.prototype.requests['/GOLD.PIX'].onload();
+          DataRequest.prototype.requests['/GUARD.PIX'].onload();
+          DataRequest.prototype.requests['/HALL.ART'].onload();
+          DataRequest.prototype.requests['/HALL.B'].onload();
+          DataRequest.prototype.requests['/HALL.O'].onload();
+          DataRequest.prototype.requests['/HALL.OB'].onload();
+          DataRequest.prototype.requests['/HDLSHERO.PIX'].onload();
+          DataRequest.prototype.requests['/HELP.DAT'].onload();
+          DataRequest.prototype.requests['/HERO.PIX'].onload();
+          DataRequest.prototype.requests['/HERODEAD.PIX'].onload();
+          DataRequest.prototype.requests['/HHH.EXE'].onload();
+          DataRequest.prototype.requests['/HOUSE.ART'].onload();
+          DataRequest.prototype.requests['/HOUSE.B'].onload();
+          DataRequest.prototype.requests['/HOUSE.O'].onload();
+          DataRequest.prototype.requests['/HOUSE.OB'].onload();
+          DataRequest.prototype.requests['/HUGO.EXE'].onload();
+          DataRequest.prototype.requests['/IGOR.PIX'].onload();
+          DataRequest.prototype.requests['/JAIL.ART'].onload();
+          DataRequest.prototype.requests['/JAIL.B'].onload();
+          DataRequest.prototype.requests['/JAIL.O'].onload();
+          DataRequest.prototype.requests['/JAIL.OB'].onload();
+          DataRequest.prototype.requests['/KEY.PIX'].onload();
+          DataRequest.prototype.requests['/KITCHEN.ART'].onload();
+          DataRequest.prototype.requests['/KITCHEN.B'].onload();
+          DataRequest.prototype.requests['/KITCHEN.O'].onload();
+          DataRequest.prototype.requests['/KITCHEN.OB'].onload();
+          DataRequest.prototype.requests['/LAB.ART'].onload();
+          DataRequest.prototype.requests['/LAB.B'].onload();
+          DataRequest.prototype.requests['/LAB.O'].onload();
+          DataRequest.prototype.requests['/LAB.OB'].onload();
+          DataRequest.prototype.requests['/LAKEROOM.ART'].onload();
+          DataRequest.prototype.requests['/LAKEROOM.B'].onload();
+          DataRequest.prototype.requests['/LAKEROOM.O'].onload();
+          DataRequest.prototype.requests['/LAKEROOM.OB'].onload();
+          DataRequest.prototype.requests['/LIPS.PIX'].onload();
+          DataRequest.prototype.requests['/MANUAL.DOC'].onload();
+          DataRequest.prototype.requests['/MASK.PIX'].onload();
+          DataRequest.prototype.requests['/MDOOR.PIX'].onload();
+          DataRequest.prototype.requests['/MONKEY.PIX'].onload();
+          DataRequest.prototype.requests['/MUMMY.PIX'].onload();
+          DataRequest.prototype.requests['/MUMMYRM.ART'].onload();
+          DataRequest.prototype.requests['/MUMMYRM.B'].onload();
+          DataRequest.prototype.requests['/MUMMYRM.O'].onload();
+          DataRequest.prototype.requests['/MUMMYRM.OB'].onload();
+          DataRequest.prototype.requests['/OLDMAN.PIX'].onload();
+          DataRequest.prototype.requests['/PROF.PIX'].onload();
+          DataRequest.prototype.requests['/PUMPKIN.PIX'].onload();
+          DataRequest.prototype.requests['/README.DOC'].onload();
+          DataRequest.prototype.requests['/REDEYES.PIX'].onload();
+          DataRequest.prototype.requests['/ROPE.PIX'].onload();
+          DataRequest.prototype.requests['/SCRIPT.FON'].onload();
+          DataRequest.prototype.requests['/SPACHERO.PIX'].onload();
+          DataRequest.prototype.requests['/STORERM.ART'].onload();
+          DataRequest.prototype.requests['/STORERM.B'].onload();
+          DataRequest.prototype.requests['/STORERM.O'].onload();
+          DataRequest.prototype.requests['/STORERM.OB'].onload();
+          DataRequest.prototype.requests['/THE_END.ART'].onload();
+          DataRequest.prototype.requests['/THE_END.B'].onload();
+          DataRequest.prototype.requests['/THE_END.O'].onload();
+          DataRequest.prototype.requests['/THE_END.OB'].onload();
+          DataRequest.prototype.requests['/TMSRB.FON'].onload();
+          DataRequest.prototype.requests['/TRAP.PIX'].onload();
+          DataRequest.prototype.requests['/VENDOR.DOC'].onload();
+          DataRequest.prototype.requests['/WDOORL.PIX'].onload();
+          DataRequest.prototype.requests['/WDOORR.PIX'].onload();
+          DataRequest.prototype.requests['/WHERO.PIX'].onload();
+          Module['removeRunDependency']('datafile_/Users/ajf/Projects/2015/win95.ajf.me/em-dosbox/src/image.data');
+
+        };
+        Module['addRunDependency']('datafile_/Users/ajf/Projects/2015/win95.ajf.me/em-dosbox/src/image.data');
+
+        if (!Module.preloadResults) Module.preloadResults = {};
+
+        Module.preloadResults[PACKAGE_NAME] = {
+          fromCache: false
+        };
+        if (fetched) {
+          processPackageData(fetched);
+          fetched = null;
+        } else {
+          fetchedCallback = processPackageData;
+        }
+
+      }
+      if (Module['calledRun']) {
+        runWithFS();
+      } else {
+        if (!Module['preRun']) Module['preRun'] = [];
+        Module["preRun"].push(runWithFS); // FS is not initialized yet, wait for it
+      }
+
+    })();
+
+    Module['arguments'] = [ './autoexec.bat' ];
+
+    function stuck_func() {}
+    document.getElementById('showLogs').addEventListener('change', function() {
+      if (document.getElementById('showLogs').checked) {
+        document.getElementById('output').style.display = "block";
+      } else {
+        document.getElementById('output').style.display = "none";
+      }
+    });
+
+    document.getElementById('homepage').addEventListener('click', function() {
+      location.href = '..';
+    });
+  </script>
+  <script async type="text/javascript" src="../dosbox/playdos.js"></script>
+</body>
+
+</html>
